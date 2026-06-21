@@ -120,11 +120,13 @@ def collect_threads(subreddit: str, n: int):
         if not listing:
             continue
         posts = listing.get("data", {}).get("children", [])
-        wanted = [
+        matched = [
             p["data"] for p in posts
             if any(k in (p["data"].get("title", "").lower())
                    for k in ("post game", "game thread", "daily", "discussion", "thoughts", "[serious]"))
-        ] or [p["data"] for p in posts][:8]
+        ]
+        fallback = [p["data"] for p in posts]
+        wanted = (matched or fallback)[:8]   # cap both branches, not just the fallback
         for post in wanted:
             if len(out) >= n:
                 break
@@ -134,9 +136,9 @@ def collect_threads(subreddit: str, n: int):
             if not data or len(data) < 2:
                 continue
             for c in data[1].get("data", {}).get("children", []):
-                d = c.get("data", {})
-                if d.get("kind") == "more":
+                if c.get("kind") == "more":   # "kind" is on the child, not its data
                     continue
+                d = c.get("data", {})
                 body = clean(d.get("body", ""))
                 if usable(body):
                     out[d.get("id")] = {

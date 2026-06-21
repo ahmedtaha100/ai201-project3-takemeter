@@ -35,6 +35,9 @@ def _key_ok() -> bool:
 
 def parse_label(text: str) -> str:
     t = (text or "").strip().lower()
+    # normalize the common human-readable spellings of hot_take so "hot take"/"hot-take" don't
+    # fall through to the majority fallback and silently mislabel a test item.
+    t = t.replace("hot-take", "hot_take").replace("hot take", "hot_take").replace("hottake", "hot_take")
     # exact first
     for lbl in LABELS:
         if t == lbl:

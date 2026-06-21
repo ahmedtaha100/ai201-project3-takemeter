@@ -19,10 +19,12 @@ def load_labeled(path: str) -> pd.DataFrame:
     df["text"] = df["text"].astype(str).str.strip()
     df["label"] = df["label"].astype(str).str.strip()
 
-    # Leakage guard #1: drop exact-duplicate texts (a comment in train AND test would inflate
-    # the score). Keep the first occurrence.
+    # Leakage guard #1: drop NEAR-duplicate texts (lowercased + whitespace-collapsed), not just
+    # byte-identical ones — a comment that lands in train AND test (even with a casing/spacing
+    # difference, common with cross-posts and quote-replies) would inflate the score. Keep first.
     before = len(df)
-    df = df.drop_duplicates(subset="text").reset_index(drop=True)
+    norm = df["text"].str.lower().str.replace(r"\s+", " ", regex=True)
+    df = df[~norm.duplicated()].reset_index(drop=True)
     dropped = before - len(df)
 
     # Keep only in-taxonomy labels.
@@ -38,6 +40,11 @@ def stratified_split(df: pd.DataFrame, seed: int = SEED):
     for label in LABELS:
         sub = df[df["label"] == label].sample(frac=1.0, random_state=seed).reset_index(drop=True)
         n = len(sub)
+        if n < 4:
+            raise ValueError(
+                f"class '{label}' has only {n} example(s); a 70/15/15 split needs >=4 per class "
+                "(else train/val/test would be empty for it). Collect more of this class."
+            )
         n_test = max(1, round(n * 0.15))
         n_val = max(1, round(n * 0.15))
         test_parts.append(sub.iloc[:n_test])

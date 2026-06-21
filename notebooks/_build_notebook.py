@@ -144,6 +144,7 @@ cells = [
         "client = Groq(api_key=key)",
         "def parse(t):",
         "    t = (t or '').strip().lower()",
+        "    t = t.replace('hot-take','hot_take').replace('hot take','hot_take').replace('hottake','hot_take')",
         "    for l in LABELS:",
         "        if re.search(rf'\\b{l}\\b', t): return l",
         "    return ''",
