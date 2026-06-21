@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+"""Generate notebooks/takemeter.ipynb — a self-contained, Colab-T4-ready notebook that
+reproduces the full TakeMeter pipeline. Run: python notebooks/_build_notebook.py"""
+import json
+import os
+
+
+def md(*lines):
+    return {"cell_type": "markdown", "metadata": {}, "source": [l + "\n" for l in lines]}
+
+
+def code(*lines):
+    return {"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [],
+            "source": [l + "\n" for l in lines]}
+
+
+cells = [
+    md("# 🏀 TakeMeter — fine-tune DistilBERT on r/nba comment discourse",
+       "",
+       "Classifies an r/nba **comment** as `reaction`, `hot_take`, or `analysis`.",
+       "",
+       "**Before you run:** Runtime → Change runtime type → **T4 GPU**. Then Runtime → Run all.",
+       "",
+       "Pipeline: upload the single labeled CSV → 70/15/15 split → fine-tune → evaluate +",
+       "confusion matrix → zero-shot Groq baseline on the **same** test set → save",
+       "`evaluation_results.json` + `confusion_matrix.png`.",
+       "",
+       "> Colab resets wipe state — if you reconnect, re-run from the top (re-upload the CSV and",
+       "> re-enter the Groq key).") ,
+
+    md("## Section 0 — Install"),
+    code("!pip -q install 'transformers>=4.46' 'datasets>=2.20' 'accelerate>=1.1.0' "
+         "scikit-learn matplotlib groq pandas"),
+
+    md("## Section 1 — Taxonomy (single source of truth)",
+       "Same definitions used by the labeler, the baseline, and this notebook."),
+    code(
+        "LABELS = ['reaction', 'hot_take', 'analysis']",
+        "LABEL2ID = {l: i for i, l in enumerate(LABELS)}",
+        "ID2LABEL = {i: l for i, l in enumerate(LABELS)}",
+        "DEFINITIONS = {",
+        "    'reaction': 'Emotional, in-the-moment expression with NO substantive basketball claim.',",
+        "    'hot_take': 'A strongly-stated debatable opinion/claim/prediction asserted with little/no support (a lone stat is garnish).',",
+        "    'analysis': 'A reasoned argument that explains WHY via a causal chain or stacked evidence.',",
+        "}",
+        "def build_prompt(c):",
+        "    defs = chr(10).join(f'- {l}: {DEFINITIONS[l]}' for l in LABELS)",
+        "    return ('Classify this Reddit r/nba comment.\\n'",
+        "            'Q1 makes a debatable basketball claim? no -> reaction.\\n'",
+        "            'Q2 if yes, backed by a real explanatory chain or multiple evidence? no -> hot_take, yes -> analysis.\\n\\n'",
+        "            f'{defs}\\n\\nComment: \\\"\\\"\\\"{c}\\\"\\\"\\\"\\n\\n'",
+        "            'Output ONLY one of: reaction, hot_take, analysis.')",
+    ),
+
+    md("## Section 2 — Upload the labeled CSV and split 70/15/15",
+       "Upload your single `takemeter_labeled.csv` (columns: `text,label,notes`). The notebook",
+       "does the split — do **not** pre-split. Leakage guards: drop duplicate texts, assert no",
+       "text overlap across splits."),
+    code(
+        "import pandas as pd, numpy as np",
+        "from google.colab import files",
+        "up = files.upload()  # choose takemeter_labeled.csv",
+        "fn = list(up.keys())[0]",
+        "df = pd.read_csv(fn)",
+        "df['text'] = df['text'].astype(str).str.strip()",
+        "df['label'] = df['label'].astype(str).str.strip()",
+        "df = df.drop_duplicates(subset='text')",
+        "df = df[df.label.isin(LABELS)].reset_index(drop=True)",
+        "print('rows:', len(df)); print(df.label.value_counts())",
+        "",
+        "SEED = 42",
+        "tr, va, te = [], [], []",
+        "for l in LABELS:",
+        "    sub = df[df.label == l].sample(frac=1, random_state=SEED).reset_index(drop=True)",
+        "    n = len(sub); nt = max(1, round(n*0.15)); nv = max(1, round(n*0.15))",
+        "    te.append(sub.iloc[:nt]); va.append(sub.iloc[nt:nt+nv]); tr.append(sub.iloc[nt+nv:])",
+        "train = pd.concat(tr).sample(frac=1, random_state=SEED).reset_index(drop=True)",
+        "val   = pd.concat(va).sample(frac=1, random_state=SEED).reset_index(drop=True)",
+        "test  = pd.concat(te).sample(frac=1, random_state=SEED).reset_index(drop=True)",
+        "assert not (set(train.text) & set(test.text)) and not (set(val.text) & set(test.text))",
+        "print('train/val/test =', len(train), len(val), len(test))",
+    ),
+
+    md("## Section 3 — Fine-tune `distilbert-base-uncased`",
+       "Defaults: **3 epochs, lr 2e-5, batch 16**. **Deliberate decision:** we use **5 epochs +",
+       "early stopping on val macro-F1** (keep the best checkpoint) — with ~250 examples and a",
+       "rare `analysis` class, 3 epochs underfits. Set `EPOCHS=3` to reproduce the default."),
+    code(
+        "import torch, numpy as np",
+        "from datasets import Dataset",
+        "from sklearn.metrics import f1_score",
+        "from transformers import (AutoModelForSequenceClassification, AutoTokenizer,",
+        "    DataCollatorWithPadding, EarlyStoppingCallback, Trainer, TrainingArguments)",
+        "",
+        "EPOCHS, LR, BATCH, MAXLEN = 5, 2e-5, 16, 128",
+        "MODEL = 'distilbert-base-uncased'",
+        "tok = AutoTokenizer.from_pretrained(MODEL)",
+        "def enc(d):",
+        "    ds = Dataset.from_dict({'text': d.text.tolist(), 'labels': [LABEL2ID[l] for l in d.label]})",
+        "    return ds.map(lambda b: tok(b['text'], truncation=True, max_length=MAXLEN), batched=True)",
+        "tr_ds, va_ds, te_ds = enc(train), enc(val), enc(test)",
+        "model = AutoModelForSequenceClassification.from_pretrained(",
+        "    MODEL, num_labels=3, id2label=ID2LABEL, label2id=LABEL2ID)",
+        "def metrics(p):",
+        "    logits, labels = p; preds = np.argmax(logits, -1)",
+        "    return {'macro_f1': f1_score(labels, preds, average='macro')}",
+        "args = TrainingArguments(output_dir='out', num_train_epochs=EPOCHS, learning_rate=LR,",
+        "    per_device_train_batch_size=BATCH, per_device_eval_batch_size=BATCH,",
+        "    eval_strategy='epoch', save_strategy='epoch', load_best_model_at_end=True,",
+        "    metric_for_best_model='macro_f1', greater_is_better=True, report_to='none', seed=42)",
+        "trainer = Trainer(model=model, args=args, train_dataset=tr_ds, eval_dataset=va_ds,",
+        "    processing_class=tok, data_collator=DataCollatorWithPadding(tok), compute_metrics=metrics,",
+        "    callbacks=[EarlyStoppingCallback(early_stopping_patience=2)])",
+        "trainer.train()",
+    ),
+
+    md("## Section 4 — Evaluate the fine-tuned model + confusion matrix"),
+    code(
+        "import matplotlib.pyplot as plt",
+        "from sklearn.metrics import classification_report, confusion_matrix",
+        "pred = trainer.predict(te_ds)",
+        "probs = torch.softmax(torch.tensor(pred.predictions), -1).numpy()",
+        "ft_pred_ids = probs.argmax(-1)",
+        "y_true = [LABEL2ID[l] for l in test.label]",
+        "ft_preds = [ID2LABEL[i] for i in ft_pred_ids]",
+        "print(classification_report(test.label, ft_preds, labels=LABELS, digits=3))",
+        "cm = confusion_matrix(test.label, ft_preds, labels=LABELS)",
+        "fig, ax = plt.subplots(figsize=(5,4.2)); im = ax.imshow(cm, cmap='Purples')",
+        "ax.set_xticks(range(3)); ax.set_xticklabels(LABELS, rotation=20, ha='right')",
+        "ax.set_yticks(range(3)); ax.set_yticklabels(LABELS)",
+        "ax.set_xlabel('predicted'); ax.set_ylabel('true'); ax.set_title('Fine-tuned confusion matrix')",
+        "for i in range(3):",
+        "    for j in range(3): ax.text(j, i, cm[i][j], ha='center', va='center')",
+        "fig.tight_layout(); fig.savefig('confusion_matrix.png', dpi=150); plt.show()",
+    ),
+
+    md("## Section 5 — Zero-shot Groq baseline on the **same** test set",
+       "Embeds the label definitions and asks for the label name only; reports the unparseable",
+       "rate (revise the prompt if >10%). Enter your Groq key when prompted — **never commit it**."),
+    code(
+        "import getpass, re",
+        "from groq import Groq",
+        "key = getpass.getpass('GROQ_API_KEY: ')",
+        "client = Groq(api_key=key)",
+        "def parse(t):",
+        "    t = (t or '').strip().lower()",
+        "    for l in LABELS:",
+        "        if re.search(rf'\\b{l}\\b', t): return l",
+        "    return ''",
+        "base_preds, unparsed = [], 0",
+        "for c in test.text:",
+        "    try:",
+        "        r = client.chat.completions.create(model='llama-3.3-70b-versatile',",
+        "            messages=[{'role':'user','content':build_prompt(c)}], temperature=0, max_tokens=10)",
+        "        p = parse(r.choices[0].message.content)",
+        "    except Exception as e:",
+        "        p = ''",
+        "    if not p: unparsed += 1; p = 'reaction'",
+        "    base_preds.append(p)",
+        "print(f'unparseable {unparsed}/{len(test)} ({100*unparsed/len(test):.1f}%)')",
+        "print(classification_report(test.label, base_preds, labels=LABELS, digits=3))",
+    ),
+
+    md("## Section 6 — Save `evaluation_results.json` + download artifacts",
+       "Commit both files to the repo. The README's confusion matrix is the markdown version;",
+       "this PNG is the supplementary copy."),
+    code(
+        "import json",
+        "from sklearn.metrics import precision_recall_fscore_support, accuracy_score, f1_score",
+        "def summary(y, yhat):",
+        "    p, r, f, s = precision_recall_fscore_support(y, yhat, labels=LABELS, zero_division=0)",
+        "    return {'accuracy': round(accuracy_score(y, yhat), 4),",
+        "            'macro_f1': round(f1_score(y, yhat, average='macro'), 4),",
+        "            'per_class': {LABELS[i]: {'precision': round(p[i],4), 'recall': round(r[i],4),",
+        "                'f1': round(f[i],4), 'support': int(s[i])} for i in range(3)},",
+        "            'confusion_matrix': confusion_matrix(y, yhat, labels=LABELS).tolist()}",
+        "results = {'fine_tuned': summary(test.label, ft_preds),",
+        "           'baseline_zero_shot': summary(test.label, base_preds)}",
+        "results['delta_macro_f1_ft_minus_baseline'] = round(",
+        "    results['fine_tuned']['macro_f1'] - results['baseline_zero_shot']['macro_f1'], 4)",
+        "json.dump(results, open('evaluation_results.json','w'), indent=2)",
+        "print(json.dumps(results, indent=2))",
+        "# markdown confusion table for the README",
+        "cm = results['fine_tuned']['confusion_matrix']",
+        "print('\\n| true/pred | ' + ' | '.join(LABELS) + ' |')",
+        "print('|' + '---|'*4)",
+        "for i,l in enumerate(LABELS): print(f'| {l} | ' + ' | '.join(str(x) for x in cm[i]) + ' |')",
+        "from google.colab import files",
+        "files.download('evaluation_results.json'); files.download('confusion_matrix.png')",
+    ),
+]
+
+nb = {
+    "cells": cells,
+    "metadata": {
+        "accelerator": "GPU",
+        "colab": {"name": "takemeter.ipynb", "provenance": []},
+        "kernelspec": {"display_name": "Python 3", "name": "python3"},
+        "language_info": {"name": "python"},
+    },
+    "nbformat": 4,
+    "nbformat_minor": 0,
+}
+
+out = os.path.join(os.path.dirname(__file__), "takemeter.ipynb")
+with open(out, "w") as f:
+    json.dump(nb, f, indent=1)
+print(f"wrote {out} with {len(cells)} cells")

@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+*.egg-info/
+.DS_Store
+# heavy / generated model artifacts
+models/
+distilbert-takemeter/
+*.safetensors
+*.bin
+# synthetic smoke-test scratch (NOT the deliverable dataset)
+data/_smoketest/
