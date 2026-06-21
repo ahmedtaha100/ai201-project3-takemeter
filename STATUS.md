@@ -29,7 +29,10 @@
    python src/collect.py --target 400          # writes data/raw_comments.csv
    ```
 2. **Groq API key.** Put a real key in `.env` (`GROQ_API_KEY=...`). Gates pre-labeling and
-   the zero-shot baseline.
+   the zero-shot baseline. **Note:** Groq **deprecated `llama-3.3-70b-versatile` on
+   2026-06-17** (pinned in `src/baseline.py:28`). It still resolves for now; if a live call
+   400s on a decommissioned model, swap the pin to a current model (e.g.
+   `openai/gpt-oss-120b`) per <https://console.groq.com/docs/models>.
 3. **Human-review** `data/needs_review.csv` after `src/label.py`, fold corrections back into
    `data/takemeter_labeled.csv`, and confirm the distribution (each class ≥20%, none >70% —
    `src/label.py` prints it; collect more of any thin class).

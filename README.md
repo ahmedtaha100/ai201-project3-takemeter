@@ -213,6 +213,12 @@ artifacts/   train/val/test.csv  *_preds.json  report_blocks.md  wrong_predictio
 evaluation_results.json   confusion_matrix.png
 ```
 
+> The layout above is the **intended final state**. The data files
+> (`data/takemeter_labeled.csv`, `data/needs_review.csv`) and every file under `artifacts/`
+> (plus `evaluation_results.json`, `confusion_matrix.png`) are **produced by the run order
+> below** and are not present until then — see the `RESULTS PENDING` markers and
+> [STATUS.md](STATUS.md).
+
 Run order (see [STATUS.md](STATUS.md) for the two prerequisites):
 
 ```bash
