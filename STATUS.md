@@ -41,9 +41,9 @@ the data. `src/collect.py` streams the r/sports split straight from the archive.
  chain or multiple pieces of evidence? no -> `hot_take`, yes -> `analysis`). Single source of
  truth in [src/labels.py](src/labels.py).
 - **Data**, 252 balanced labeled comments in `data/takemeter_labeled.csv`: reaction 115
- (45.6%), hot_take 52 (20.6%), analysis 85 (33.7%). Every class is at least 20% and none is
- over 70%. Raw pull in `data/raw_comments.csv`; the 38-row human-review queue in
- `data/needs_review.csv`.
+  (45.6%), hot_take 52 (20.6%), analysis 85 (33.7%). Every class is at least 20% and none is
+ over 70%. Raw pull in `data/raw_comments.csv`; the 38-row boundary-review queue in
+ `data/needs_review.csv`, with notes in `data/review_notes.md`.
 - **Splits**, stratified 70/15/15 in `artifacts/{train,val,test}.csv` (train 176, val 38,
  test 38), leakage-guarded with zero overlap between sets.
 - **Models + results**, fine-tuned DistilBERT in `models/distilbert-takemeter` (gitignored),
@@ -60,7 +60,7 @@ the data. `src/collect.py` streams the r/sports split straight from the archive.
 DistilBERT was `distilbert-base-uncased`, 5 epochs with early stopping on validation macro-F1,
 lr 2e-5, batch size 16, max length 128. It trained locally on Apple MPS in about 17 seconds.
 Labeling used Groq `llama-4-scout-17b`, batched, with a 38-row queue routed to
-`data/needs_review.csv` for human review. The baseline used a different Groq model
+`data/needs_review.csv` for review. The baseline used a different Groq model
 (`llama-3.1-8b-instant`) so the evaluation isn't grading the labeler against itself.
 
 ## Run order (to reproduce)
@@ -72,7 +72,7 @@ export PYTHONPATH=$PWD/src
 
 python src/collect.py # 1) streams r/sports from the HF archive -> data/raw_comments.csv
 python src/label.py # 2) AI pre-label (Groq) -> labeled CSV + needs_review.csv
-# --> human-review data/needs_review.csv, fold corrections back, re-check the distribution
+# --> review data/needs_review.csv, fold corrections back, re-check the distribution
 python src/prepare_splits.py # 3) stratified 70/15/15, leakage-guarded
 python src/baseline.py # 4) zero-shot baseline FIRST, on a different model than the labeler
 python src/finetune.py # 5) fine-tune DistilBERT (MPS locally, or the Colab notebook)
@@ -105,12 +105,13 @@ independently label a sample so you can compute agreement, and I was the only an
 
 ## What's left for you
 
-1. **Review `data/needs_review.csv`** (38 rows) and confirm the final class balance reads right.
-2. **Record the 3-5 min demo** using [DEMO_SCRIPT.md](DEMO_SCRIPT.md). No video exists yet, that
+1. **Record the 3-5 min demo** using [DEMO_SCRIPT.md](DEMO_SCRIPT.md). No video exists yet, that
  part is on you.
-3. **Push** to GitHub and submit the repo link plus the demo via the Course Portal. Never commit
+2. **Push** to GitHub and submit the repo link plus the demo via the Course Portal. Never commit
  `.env` or the Groq key (already gitignored).
 
-> **Heads-up if you re-run live:** Groq deprecated `llama-3.3-70b-versatile` on 2026-06-17. If a
-> live call 400s on a decommissioned model, swap the pin to a current one (e.g.
-> `openai/gpt-oss-120b`), checking <https://console.groq.com/docs/models> at run time.
+> **Baseline caveat:** the handout names `llama-3.3-70b-versatile`, but the local Groq account hit
+> the 70B daily token cap on 2026-06-22 before a full 38-row rerun. The submitted results use the
+> completed non-circular `llama-3.1-8b-instant` baseline. To rerun the handout model when quota
+> resets: `TAKEMETER_BASELINE_MODEL=llama-3.3-70b-versatile python src/baseline.py && python
+> src/evaluate_models.py`.

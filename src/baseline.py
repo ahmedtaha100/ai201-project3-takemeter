@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Zero-shot baseline: classify the SAME held-out test set with Groq llama-3.3-70b-versatile,
-no task-specific training. Run AFTER prepare_splits.py and (ideally) BEFORE looking at the
+Zero-shot baseline: classify the SAME held-out test set with a Groq chat model, no
+task-specific training. Run AFTER prepare_splits.py and (ideally) BEFORE looking at the
 fine-tuned model's numbers.
 
     python src/baseline.py            # reads artifacts/test.csv -> artifacts/baseline_preds.json
@@ -26,9 +26,10 @@ from labels import LABELS, build_prompt
 
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-# Independent zero-shot baseline model, deliberately NOT the same model that pre-labeled the
-# gold set (that was llama-4-scout-17b), so the comparison is not circular.
-LLM_MODEL = "llama-3.1-8b-instant"
+# The handout names llama-3.3-70b-versatile, but the local Groq account hit its daily 70B
+# token cap on 2026-06-22. The committed artifacts therefore use this non-circular zero-shot
+# baseline. Override with TAKEMETER_BASELINE_MODEL=llama-3.3-70b-versatile when quota is reset.
+LLM_MODEL = os.getenv("TAKEMETER_BASELINE_MODEL", "llama-3.1-8b-instant")
 
 
 def chat_with_backoff(client, content, max_tokens, max_retries=8):

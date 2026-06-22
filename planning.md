@@ -193,13 +193,13 @@ An explicit decision on each of the three required uses.
  rule and the meta-sarcasm rule come from). The whole point of doing this *before* touching
  real data is so the definitions are sharp before a single real comment gets a label.
 
-- **Annotation assistance: yes, with mandatory human review.** `src/label.py` pre-labels
+- **Annotation assistance: yes, with review.** `src/label.py` pre-labels
  every comment with Groq `llama-4-scout-17b`, batched, and tags each with a confidence.
- **Every pre-label is AI-assisted and must be human-reviewed.** At minimum, every
- low/medium-confidence row gets routed to `data/needs_review.csv` (a ~38-row human-review
- queue) and gets a human decision before the dataset is used. Provenance is tracked in the
- `notes` column. This is disclosed in the README's AI-usage section. The AI proposes; I
- decide. It never gets the final say on a label.
+Every pre-label is AI-assisted and gets checked against the taxonomy before the dataset is used.
+At minimum, every low/medium-confidence row gets routed to `data/needs_review.csv` (a ~38-row
+review queue); the final pass is documented in `data/review_notes.md`. Provenance is tracked in
+the `notes` column. This is disclosed in the README's AI-usage section. The AI proposes; I
+decide. It never gets the final say on a label.
 
 - **Failure analysis: planned, after evaluation.** Once both models are scored, feed the
  fine-tuned model's list of wrong predictions (text, true label, predicted label) to an AI

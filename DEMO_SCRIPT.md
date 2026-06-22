@@ -116,6 +116,10 @@ bold opinion. My small fine-tuned model, on 176 examples, couldn't carve out the
 class and just gave up on it. Fine-tuning isn't automatically the win. With a tiny, imbalanced dataset
 on a genuinely subjective boundary, broad pretraining wins."**
 
+_If asked why this is not the handout's 70B baseline:_ **"The 70B Groq model hit the daily token cap
+before I could rerun all 38 test comments, so this submitted comparison uses the completed non-circular
+8B zero-shot run. The code can rerun the 70B model when quota resets."**
+
 ---
 
 ## 4:30 to 5:00, Close

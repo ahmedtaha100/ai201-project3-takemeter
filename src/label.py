@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Pre-label raw r/sports comments with Groq llama-4-scout-17b, assign a confidence to each,
-and split out a small human-review queue for the boundary cases.
+and split out a small review queue for the boundary cases.
 
     python src/label.py --in data/raw_comments.csv --out data/takemeter_labeled.csv
 

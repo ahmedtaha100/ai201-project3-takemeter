@@ -14,8 +14,8 @@ API to an archived dump.
 - `raw_comments.csv`: 900 raw comments streamed from the r/sports split (output of `src/collect.py`).
 - `takemeter_labeled.csv`: the 252 labeled comments. Columns are `text,label,notes`. This is the
   submission dataset.
-- `needs_review.csv`: a 38-row queue of low and medium confidence rows flagged for the human
-  review pass.
+- `needs_review.csv`: a 38-row queue of low and medium confidence rows flagged for review.
+- `review_notes.md`: the final review note for that flagged queue.
 
 ## Taxonomy
 

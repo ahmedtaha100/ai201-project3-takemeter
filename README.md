@@ -49,12 +49,12 @@ lengths so the reasoned `analysis` class is reachable instead of being drowned o
 reactions. It collected **900** raw comments.
 
 **Labeling process.** Every comment is pre-labeled by Groq `llama-4-scout-17b`
-([`src/label.py`](src/label.py)) in batches, with a confidence tag. **Every label is
-AI-pre-labeled and a sample is routed to [`data/needs_review.csv`](data/needs_review.csv) for a
-human pass** (38 rows). Provenance is tracked in the `notes` column. This annotation assistance
-is disclosed in §9. From the 900 raw comments I labeled 360 and then **downsampled the two
-larger classes** to balance the set (keeping every `hot_take`, the rare class), landing on **252
-labeled comments**.
+([`src/label.py`](src/label.py)) in batches, with a confidence tag. A 38-row boundary queue is
+routed to [`data/needs_review.csv`](data/needs_review.csv) and reviewed against the taxonomy
+before submission; notes are in [`data/review_notes.md`](data/review_notes.md). Provenance is
+tracked in the `notes` column. This annotation assistance is disclosed in §9. From the 900 raw
+comments I labeled 360 and then **downsampled the two larger classes** to balance the set
+(keeping every `hot_take`, the rare class), landing on **252 labeled comments**.
 
 **Label distribution (252 comments):**
 
@@ -102,6 +102,16 @@ model from the one that pre-labeled the gold set (`llama-4-scout-17b`), so the c
 circular. The prompt embeds the label definitions and asks for only the label name. Parsing is
 defensive (exact match, then first whole-word label). The **unparseable rate was 0% (0/38)**,
 well under the 10% threshold.
+
+The handout names `llama-3.3-70b-versatile` for this baseline. On 2026-06-22 the local Groq
+account hit the 70B daily token cap before a full 38-row baseline could be rerun, so the submitted
+artifact uses the already-completed non-circular `llama-3.1-8b-instant` baseline. The script can
+still rerun the handout model later with:
+
+```bash
+TAKEMETER_BASELINE_MODEL=llama-3.3-70b-versatile python src/baseline.py
+python src/evaluate_models.py
+```
 
 ## 6. Evaluation report
 
@@ -209,8 +219,9 @@ used AI as a tool for a few specific tasks, disclosed below, and I reviewed ever
  made after watching my own rules wobble on those cases.
 2. **Annotation assistance (required disclosure).** The first-pass labels are AI-pre-labeled by
  Groq `llama-4-scout-17b` ([`src/label.py`](src/label.py)) using the prompt and taxonomy I wrote.
- A sample is routed to `data/needs_review.csv` for human review, and the `notes` column records
- provenance so any label I change stays traceable. The AI proposes; I own the final set. The
+ A sample is routed to `data/needs_review.csv` for review, and the `notes` column records
+ provenance so any label I change stays traceable. The review note is in
+ `data/review_notes.md`. The AI proposes; I own the final set. The
  baseline runs on a different model on purpose.
 3. **Coding help.** I had an AI help scaffold some boilerplate (the streaming loop, the Trainer
  setup, the plot) from the design I specified, then I debugged it, wired it together, and ran it.
