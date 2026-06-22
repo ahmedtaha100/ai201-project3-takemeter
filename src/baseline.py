@@ -26,10 +26,8 @@ from labels import LABELS, build_prompt
 
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-# The handout names llama-3.3-70b-versatile, but the local Groq account hit its daily 70B
-# token cap on 2026-06-22. The committed artifacts therefore use this non-circular zero-shot
-# baseline. Override with TAKEMETER_BASELINE_MODEL=llama-3.3-70b-versatile when quota is reset.
-LLM_MODEL = os.getenv("TAKEMETER_BASELINE_MODEL", "llama-3.1-8b-instant")
+# Rubric-required baseline model. The environment override is only for debugging.
+LLM_MODEL = os.getenv("TAKEMETER_BASELINE_MODEL", "llama-3.3-70b-versatile")
 
 
 def chat_with_backoff(client, content, max_tokens, max_retries=8):
@@ -93,13 +91,13 @@ def main():
         try:
             raw = chat_with_backoff(client, build_prompt(r.text), max_tokens=24)
         except Exception as e:  # noqa: BLE001
-            raw = f"__error__ {type(e).__name__}"
+            raise RuntimeError(f"Groq baseline failed on test row {i}: {type(e).__name__}: {e}") from e
         time.sleep(0.2)
         pred = parse_label(raw)
         if not pred:
             unparsed += 1
             pred = "reaction"  # majority fallback so every test item gets a prediction
-        rows.append({"text": r.text, "true": r.label, "pred": pred, "raw": raw.strip()[:80]})
+        rows.append({"text": r.text, "true": r.label, "pred": pred, "raw": raw.strip()[:80], "model": LLM_MODEL})
 
     os.makedirs(args.artifacts, exist_ok=True)
     with open(os.path.join(args.artifacts, "baseline_preds.json"), "w") as f:

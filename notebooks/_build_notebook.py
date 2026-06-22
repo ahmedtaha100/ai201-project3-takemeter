@@ -151,7 +151,7 @@ cells = [
         "base_preds, unparsed = [], 0",
         "for c in test.text:",
         "    try:",
-        "        r = client.chat.completions.create(model='llama-3.1-8b-instant',",
+        "        r = client.chat.completions.create(model='llama-3.3-70b-versatile',",
         "            messages=[{'role':'user','content':build_prompt(c)}], temperature=0, max_tokens=10)",
         "        p = parse(r.choices[0].message.content)",
         "    except Exception as e:",

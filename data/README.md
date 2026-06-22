@@ -31,8 +31,8 @@ The final 252 comments break down like this:
 
 | label    | count | share  |
 |----------|-------|--------|
-| reaction |   115 | 45.6%  |
-| hot_take |    52 | 20.6%  |
-| analysis |    85 | 33.7%  |
+| reaction |   114 | 45.2%  |
+| hot_take |    51 | 20.2%  |
+| analysis |    87 | 34.5%  |
 
 Every class clears 20% and none of them sits above 70%, so the set stays reasonably balanced.

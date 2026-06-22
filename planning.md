@@ -174,7 +174,7 @@ errors concentrated on the genuinely hard `hot_take` ↔ `analysis` seam rather 
 everywhere.
 
 A note on what the baseline is, since it matters for honesty: the baseline is a **zero-shot
-Groq model** (`llama-3.1-8b-instant`), deliberately a **different** model than the one used to
+Groq model** (`llama-3.3-70b-versatile`), deliberately a **different** model than the one used to
 pre-label the data (`llama-4-scout-17b`). If the baseline and the labeler were the same model,
 beating the baseline would just mean the test labels agreed with themselves. Using a different
 model keeps the comparison from being circular.

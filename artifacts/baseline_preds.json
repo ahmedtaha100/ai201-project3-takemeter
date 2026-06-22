@@ -3,228 +3,266 @@
     "text": "[It's a leg lace.]( This is not like a rear naked choke or [omoplata]( which are intended to inflict so much pain or restrict circulation such that your opponent concedes the match. It's a turn that rolls your opponent, scoring points for exposure (exposing opponent's back to the mat).",
     "true": "analysis",
     "pred": "analysis",
-    "raw": "analysis"
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "More teams should go for 2 instead of OT. OT is about a 50/50 shot at winning. Going for 2 is about a 55% conversion rate. Going for 1 *seems* safer because it extends the game. But going for 2 is actually more successful in terms of winning. The reason more teams don't do so can be seen in your comment: >not converting leads to an automatic loss People focus on not coverting leading to an automatic loss instead of focusing on converting leading to an automatic win.",
     "true": "analysis",
     "pred": "analysis",
-    "raw": "analysis"
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Man, I tried to join the Air Force after high school, but they made it pretty clear to me I needed to drop any dream of being a pilot or PJ. I was a vocational drafting/mechanical engineering and design student and that was what I'd be doing in the Air Force because it was too rare a skill for a young person to have not to take advantage of. A Marines recruiter in the office next door snickered \"Another one for the Chair Force!\" as he overheard the conversation. So I ended up backing out. I didn't really care if I had a non-combat MOS, but I honestly didn't even really like engineering. The thought of doing that instead of something more challenging was a real let down. Like 4 of my buddies did end up enlisting, so I was sad I didn't go with them, but they let me know I didn't miss much haha.",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Los ang el es super chargers just doesn\u2019t have the same ring to it though",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "KC has always been this way. Released Jared Allen in his prime over a DUI. The Hunt family doesnt play around. Still shocked they took Hill. EDIT: Spelling.",
     "true": "analysis",
     "pred": "analysis",
-    "raw": "analysis"
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "At 37! He\u2019s been in the league since 20 freakin\u2019 04. It really is a testament to how hard it is to be a good NFL QB. College superstars get drafted every year and fizzle out in the league. While Brees and Brady and Rivers are among the oldest and still at the top.",
     "true": "analysis",
     "pred": "analysis",
-    "raw": "analysis"
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Hidden gem in the comments",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "And how the hell can he tap while being rolled all over the mat? I'd like to see the context of this match to see if he had tried tapping earlier. Hard to be patient when your ACL/MCL is tearing. I doubt the guy getting punched was more injured than the guy he was rolling.",
     "true": "analysis",
     "pred": "analysis",
-    "raw": "analysis"
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Reffing was horse shit the entire game. Somehow worse than the Steelers game. The PI call was iffy, if they hadn\u2019t missed the flag on the hit on Rivers it would\u2019ve had a much lesser chance of getting flagged. But the Chiefs also had their drive extended three times before on ticky tack calls so it was just shit all around.",
     "true": "hot_take",
-    "pred": "reaction",
-    "raw": "reaction"
+    "pred": "analysis",
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "i get that its satire but remember Pat Tillman?",
     "true": "reaction",
-    "pred": "analysis",
-    "raw": "analysis"
+    "pred": "reaction",
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Alright. For one: she hit him in the face after he pushed her away from him. Then she kept getting in his face when two guys were holding him back and talking shit. All he did was kick her leg. He didn't even push her down, he hit one of the guys who fell into her. She got what was coming to her. I'm all for equality, but if she was a guy this is a non-story. You can't have it both ways.",
     "true": "hot_take",
     "pred": "hot_take",
-    "raw": "hot_take"
+    "raw": "hot_take",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Ah, Connor McDavid. He played for our local team before going to the NHL, and went to high school here. Was always away from class practicing, and basically single-handedly led our local team to championships. Cousin of mine went to high school with him and said he was actually a pretty great guy, too. We all were kinda sad that he didn\u2019t stay somewhat local going to the Penguins, but it is what it is.",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "They were only ahead for 4 seconds of the entire game and it was by 1 point. SPORTS",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "nfl..lots of them beaten up, NFL just turns away and ignores while putting on this pr crap",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "The answer is pretty clear here...NFL RBs should stop riding elevators. Nothing but trouble in those tin cans.",
     "true": "hot_take",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Jesus no, just no. Stfu with this bull.",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Why are you so mad? OP said Usain Bolt hit 27.8 mph in a 200m sprint, like he is trying to say that this invalidates how fast Connor is while playing hockey. People are just explaining that isn't much of a point when comparing with a hockey player casually skating 24mph while stick handling past another team wearing full hockey gear with a max rink size of 61 meters. If you really want to compare how the fastest sprinter in the world compares to how fast Connor can skate, line them both up with the same distance. 200m of ice and 200m of track. It's just such a silly thing to try and compare with such different variables.",
     "true": "analysis",
     "pred": "analysis",
-    "raw": "analysis"
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "One of the few left. Happy for you that you still have a team. I was a lifelong fan, loyal to the soil, rooted for em just the same wether they were 14-2 or 2-14, but I for one cannot get behind rooting for a Los Angeles team. Even if it is my once revered Chargers. Hurts me still, had to pack away all my gear, every Tomlinson jersey, every Neal jersey, every hat, every stupid fucking foam finger I\u2019d collected my 34 years as a fan, and it sucks. If they ever come back (sometime after 2040, but still) Id root for em with all the same passion and zest as I ever had, just cant root for an LA team, period. Tl;dr- sob sob cry cry, Ill be a SAN DIEGO Chargers fan till I die",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Correct answer. Two wideouts crossed at the line, the two defenders stayed with the outside man while Williams crossed over and no one was on him. Blown coverage because the crossing route confused them and they didn't adjust in the moment.",
     "true": "analysis",
     "pred": "analysis",
-    "raw": "analysis"
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "What a K. Hunt...s",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "The hero we need, but don't deserve.",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "You\u2019re right, no one will talk about how a man who barrels through 300 pounders for a living cant hold himself back physically when a female antagonizes him.",
-    "true": "reaction",
+    "true": "hot_take",
     "pred": "hot_take",
-    "raw": "hot_take"
+    "raw": "hot_take",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Right. And I bet you'd also bet it's harder to do on foot than on a bike. And you'd be right that the top speed on foot is less than the top speed on ice is less than the top speed on bike. But the 100m times (an NHL rink is 61m; I'm not figuring out his exact distance) aren't all that different as it's such a short distance to use your legs to accelerate in. The top speed difference on skates or bike comes from the fact that you don't lose your momentum as quickly once you've got it, so you can add more to it. But you need distance in which to do that.",
     "true": "analysis",
     "pred": "analysis",
-    "raw": "analysis"
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "99.99% of people in the military would quit if given the choice between the military or playing in the NFL. Ipso facto NFL players are better.",
     "true": "hot_take",
     "pred": "hot_take",
-    "raw": "hot_take"
+    "raw": "hot_take",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Made in China. Thanks China.",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Yes and if he did hit those speeds, he may be easier to dodge, as long as you have enough time to predict where he's going and you have enough speed. It's easy to hit someone when they're going slow, but if you're going too fast, you can't be as shifty. Plus he would get a charging penalty. McDavid is shifty enough at the right speed, and has hands that backs the defenseman up, rather than them trying to step on him.",
     "true": "analysis",
     "pred": "analysis",
-    "raw": "analysis"
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "The thing I don't like about this drill is most people have a strong side and a weak side for turning. And if you're right-handed as most people are (not necessarily right shooting), you usually turn left better. So McDavid has an advantage in this drill, assuming they're both right-handed. They should make them take one corner one way and the other corner the other way. You can see it in how Mackinnon doesn't do cross-overs in the turn. I bet if he were turning to his left he could get some cross-overs in.",
     "true": "analysis",
     "pred": "analysis",
-    "raw": "analysis"
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Thank u for your service",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "[I'm just gonna leave this here]( for some background info, Mike Tyson was 5'10\" and 217lbs in this fight, Marvis Fraizer (the son of one of the greatest boxer's of all time Joe Fraizer) is 6ft tall and 210lbs both of them are pure muscle compared to Mayweather is 5'8\" and 150lbs and well known for winning by working the point totals with footwork and baby jabs like an accountant (which is why lots of people who aren't really into boxing complain his fights are boring)",
     "true": "analysis",
     "pred": "analysis",
-    "raw": "analysis"
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "MLS is trying to sell tickets for upper deck tickets at $200+ at face. There will be empty seats",
     "true": "hot_take",
-    "pred": "analysis",
-    "raw": "analysis"
+    "pred": "hot_take",
+    "raw": "hot_take",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "I had to stop watching basketball because I could never understand this. You have to be bouncing the ball to walk, and after you stop bouncing you can put your foot down (if it's up), then pick up your other foot, put it down, then pick up your other foot, put it down, then pick up your other foot, but you can't put it down? I don't see how that's different from walking for three steps.",
     "true": "analysis",
-    "pred": "reaction",
-    "raw": "reaction"
+    "pred": "analysis",
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Harden got mad that he shoved him and did the \"whatever..fuck you\" hand swipe and he hit the ball on the way down.",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Watch New England sweep him up\ud83d\ude44",
     "true": "hot_take",
-    "pred": "reaction",
-    "raw": "reaction"
+    "pred": "hot_take",
+    "raw": "hot_take",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "I had Mike Williams on my fantasy team all year and he never produced. Now that I'm out of the playoffs, he decides to have the game of his life.",
     "true": "hot_take",
-    "pred": "hot_take",
-    "raw": "hot_take"
+    "pred": "reaction",
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Sure, it has worked for Barca, why not?",
     "true": "hot_take",
     "pred": "hot_take",
-    "raw": "hot_take"
+    "raw": "hot_take",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Did he kick one or multiple? Your title contradicts",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Any Audio version ?",
     "true": "reaction",
     "pred": "reaction",
-    "raw": "reaction"
+    "raw": "reaction",
+    "model": "llama-3.3-70b-versatile"
   },
   {
     "text": "Watch how fast McDavid is moving in this clip compared to all the people on the other team who don\u2019t even have the puck. The forward right behind him isn\u2019t even on camera when McDavid gets to the net. The defenceman at the blue line when McDavid gets the puck has a 25 foot head start and by the time McDavid scores he can barely reach him with his stick. This isn\u2019t a men\u2019s league game, he is doing this to the best hockey players in the world.",
     "true": "analysis",
     "pred": "analysis",
-    "raw": "analysis"
+    "raw": "analysis",
+    "model": "llama-3.3-70b-versatile"
   }
 ]

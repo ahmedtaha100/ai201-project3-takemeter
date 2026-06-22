@@ -20,7 +20,7 @@ import numpy as np
 
 from labels import LABELS
 
-BASELINE_MODEL = os.getenv("TAKEMETER_BASELINE_MODEL", "llama-3.1-8b-instant")
+BASELINE_MODEL = os.getenv("TAKEMETER_BASELINE_MODEL", "llama-3.3-70b-versatile")
 
 
 def load(path):
@@ -120,6 +120,7 @@ def main():
                    md_confusion(np.array(s["confusion_matrix"]), "Fine-tuned confusion matrix"), ""]
     if bl:
         s = summarize(bl); results["baseline_zero_shot"] = s
+        results["baseline_zero_shot"]["model"] = BASELINE_MODEL
         blocks += [md_metrics(f"Zero-shot Groq baseline ({BASELINE_MODEL})", s), ""]
     if ft and bl:
         d = results["fine_tuned"]["macro_f1"] - results["baseline_zero_shot"]["macro_f1"]

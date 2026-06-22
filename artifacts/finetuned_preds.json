@@ -3,418 +3,418 @@
     "text": "[It's a leg lace.]( This is not like a rear naked choke or [omoplata]( which are intended to inflict so much pain or restrict circulation such that your opponent concedes the match. It's a turn that rolls your opponent, scoring points for exposure (exposing opponent's back to the mat).",
     "true": "analysis",
     "pred": "analysis",
-    "confidence": 0.4466979205608368,
+    "confidence": 0.6083635091781616,
     "probs": {
-      "reaction": 0.3453162908554077,
-      "hot_take": 0.20798583328723907,
-      "analysis": 0.4466979205608368
+      "reaction": 0.25258868932724,
+      "hot_take": 0.13904783129692078,
+      "analysis": 0.6083635091781616
     }
   },
   {
     "text": "More teams should go for 2 instead of OT. OT is about a 50/50 shot at winning. Going for 2 is about a 55% conversion rate. Going for 1 *seems* safer because it extends the game. But going for 2 is actually more successful in terms of winning. The reason more teams don't do so can be seen in your comment: >not converting leads to an automatic loss People focus on not coverting leading to an automatic loss instead of focusing on converting leading to an automatic win.",
     "true": "analysis",
     "pred": "analysis",
-    "confidence": 0.47650325298309326,
+    "confidence": 0.6829782128334045,
     "probs": {
-      "reaction": 0.3308396339416504,
-      "hot_take": 0.19265711307525635,
-      "analysis": 0.47650325298309326
+      "reaction": 0.19707052409648895,
+      "hot_take": 0.1199512854218483,
+      "analysis": 0.6829782128334045
     }
   },
   {
     "text": "Man, I tried to join the Air Force after high school, but they made it pretty clear to me I needed to drop any dream of being a pilot or PJ. I was a vocational drafting/mechanical engineering and design student and that was what I'd be doing in the Air Force because it was too rare a skill for a young person to have not to take advantage of. A Marines recruiter in the office next door snickered \"Another one for the Chair Force!\" as he overheard the conversation. So I ended up backing out. I didn't really care if I had a non-combat MOS, but I honestly didn't even really like engineering. The thought of doing that instead of something more challenging was a real let down. Like 4 of my buddies did end up enlisting, so I was sad I didn't go with them, but they let me know I didn't miss much haha.",
     "true": "reaction",
     "pred": "reaction",
-    "confidence": 0.4468214511871338,
+    "confidence": 0.4558553397655487,
     "probs": {
-      "reaction": 0.4468214511871338,
-      "hot_take": 0.1986112743616104,
-      "analysis": 0.3545672297477722
+      "reaction": 0.4558553397655487,
+      "hot_take": 0.1817788928747177,
+      "analysis": 0.3623657822608948
     }
   },
   {
     "text": "Los ang el es super chargers just doesn\u2019t have the same ring to it though",
     "true": "reaction",
     "pred": "reaction",
-    "confidence": 0.43258148431777954,
+    "confidence": 0.5218775272369385,
     "probs": {
-      "reaction": 0.43258148431777954,
-      "hot_take": 0.22845794260501862,
-      "analysis": 0.3389606177806854
+      "reaction": 0.5218775272369385,
+      "hot_take": 0.23670008778572083,
+      "analysis": 0.24142242968082428
     }
   },
   {
     "text": "KC has always been this way. Released Jared Allen in his prime over a DUI. The Hunt family doesnt play around. Still shocked they took Hill. EDIT: Spelling.",
     "true": "analysis",
     "pred": "reaction",
-    "confidence": 0.4402839243412018,
+    "confidence": 0.5270774364471436,
     "probs": {
-      "reaction": 0.4402839243412018,
-      "hot_take": 0.2136051505804062,
-      "analysis": 0.34611088037490845
+      "reaction": 0.5270774364471436,
+      "hot_take": 0.20884941518306732,
+      "analysis": 0.26407313346862793
     }
   },
   {
     "text": "At 37! He\u2019s been in the league since 20 freakin\u2019 04. It really is a testament to how hard it is to be a good NFL QB. College superstars get drafted every year and fizzle out in the league. While Brees and Brady and Rivers are among the oldest and still at the top.",
     "true": "analysis",
     "pred": "analysis",
-    "confidence": 0.45717179775238037,
+    "confidence": 0.6115313768386841,
     "probs": {
-      "reaction": 0.32966381311416626,
-      "hot_take": 0.21316438913345337,
-      "analysis": 0.45717179775238037
+      "reaction": 0.21590715646743774,
+      "hot_take": 0.1725614368915558,
+      "analysis": 0.6115313768386841
     }
   },
   {
     "text": "Hidden gem in the comments",
     "true": "reaction",
     "pred": "reaction",
-    "confidence": 0.4214589595794678,
+    "confidence": 0.48248934745788574,
     "probs": {
-      "reaction": 0.4214589595794678,
-      "hot_take": 0.26487812399864197,
-      "analysis": 0.3136628568172455
+      "reaction": 0.48248934745788574,
+      "hot_take": 0.2744826674461365,
+      "analysis": 0.2430279403924942
     }
   },
   {
     "text": "And how the hell can he tap while being rolled all over the mat? I'd like to see the context of this match to see if he had tried tapping earlier. Hard to be patient when your ACL/MCL is tearing. I doubt the guy getting punched was more injured than the guy he was rolling.",
     "true": "analysis",
     "pred": "analysis",
-    "confidence": 0.43498945236206055,
+    "confidence": 0.4725780785083771,
     "probs": {
-      "reaction": 0.38179486989974976,
-      "hot_take": 0.1832156479358673,
-      "analysis": 0.43498945236206055
+      "reaction": 0.3771215081214905,
+      "hot_take": 0.15030033886432648,
+      "analysis": 0.4725780785083771
     }
   },
   {
     "text": "Reffing was horse shit the entire game. Somehow worse than the Steelers game. The PI call was iffy, if they hadn\u2019t missed the flag on the hit on Rivers it would\u2019ve had a much lesser chance of getting flagged. But the Chiefs also had their drive extended three times before on ticky tack calls so it was just shit all around.",
     "true": "hot_take",
     "pred": "analysis",
-    "confidence": 0.42519843578338623,
+    "confidence": 0.569485604763031,
     "probs": {
-      "reaction": 0.36182668805122375,
-      "hot_take": 0.2129749208688736,
-      "analysis": 0.42519843578338623
+      "reaction": 0.2523030638694763,
+      "hot_take": 0.17821133136749268,
+      "analysis": 0.569485604763031
     }
   },
   {
     "text": "i get that its satire but remember Pat Tillman?",
     "true": "reaction",
     "pred": "reaction",
-    "confidence": 0.4871772229671478,
+    "confidence": 0.547698974609375,
     "probs": {
-      "reaction": 0.4871772229671478,
-      "hot_take": 0.22864101827144623,
-      "analysis": 0.2841818332672119
+      "reaction": 0.547698974609375,
+      "hot_take": 0.23031659424304962,
+      "analysis": 0.22198444604873657
     }
   },
   {
     "text": "Alright. For one: she hit him in the face after he pushed her away from him. Then she kept getting in his face when two guys were holding him back and talking shit. All he did was kick her leg. He didn't even push her down, he hit one of the guys who fell into her. She got what was coming to her. I'm all for equality, but if she was a guy this is a non-story. You can't have it both ways.",
     "true": "hot_take",
     "pred": "reaction",
-    "confidence": 0.43862658739089966,
+    "confidence": 0.4900819957256317,
     "probs": {
-      "reaction": 0.43862658739089966,
-      "hot_take": 0.1878066062927246,
-      "analysis": 0.37356677651405334
+      "reaction": 0.4900819957256317,
+      "hot_take": 0.1924789696931839,
+      "analysis": 0.31743910908699036
     }
   },
   {
     "text": "Ah, Connor McDavid. He played for our local team before going to the NHL, and went to high school here. Was always away from class practicing, and basically single-handedly led our local team to championships. Cousin of mine went to high school with him and said he was actually a pretty great guy, too. We all were kinda sad that he didn\u2019t stay somewhat local going to the Penguins, but it is what it is.",
     "true": "reaction",
     "pred": "analysis",
-    "confidence": 0.4144289493560791,
+    "confidence": 0.5302286744117737,
     "probs": {
-      "reaction": 0.3823304772377014,
-      "hot_take": 0.20324058830738068,
-      "analysis": 0.4144289493560791
+      "reaction": 0.29207414388656616,
+      "hot_take": 0.17769716680049896,
+      "analysis": 0.5302286744117737
     }
   },
   {
     "text": "They were only ahead for 4 seconds of the entire game and it was by 1 point. SPORTS",
     "true": "reaction",
-    "pred": "reaction",
-    "confidence": 0.38395658135414124,
+    "pred": "analysis",
+    "confidence": 0.40849319100379944,
     "probs": {
-      "reaction": 0.38395658135414124,
-      "hot_take": 0.23271654546260834,
-      "analysis": 0.38332682847976685
+      "reaction": 0.3670657277107239,
+      "hot_take": 0.2244410216808319,
+      "analysis": 0.40849319100379944
     }
   },
   {
     "text": "nfl..lots of them beaten up, NFL just turns away and ignores while putting on this pr crap",
     "true": "reaction",
     "pred": "reaction",
-    "confidence": 0.4489533007144928,
+    "confidence": 0.5419624447822571,
     "probs": {
-      "reaction": 0.4489533007144928,
-      "hot_take": 0.2158815711736679,
-      "analysis": 0.3351651132106781
+      "reaction": 0.5419624447822571,
+      "hot_take": 0.21817253530025482,
+      "analysis": 0.2398650199174881
     }
   },
   {
     "text": "The answer is pretty clear here...NFL RBs should stop riding elevators. Nothing but trouble in those tin cans.",
     "true": "hot_take",
     "pred": "reaction",
-    "confidence": 0.44299012422561646,
+    "confidence": 0.5392417311668396,
     "probs": {
-      "reaction": 0.44299012422561646,
-      "hot_take": 0.21301010251045227,
-      "analysis": 0.34399980306625366
+      "reaction": 0.5392417311668396,
+      "hot_take": 0.2350894808769226,
+      "analysis": 0.22566881775856018
     }
   },
   {
     "text": "Jesus no, just no. Stfu with this bull.",
     "true": "reaction",
     "pred": "reaction",
-    "confidence": 0.48369520902633667,
+    "confidence": 0.5337461233139038,
     "probs": {
-      "reaction": 0.48369520902633667,
-      "hot_take": 0.23854054510593414,
-      "analysis": 0.27776432037353516
+      "reaction": 0.5337461233139038,
+      "hot_take": 0.2512529194355011,
+      "analysis": 0.2150009721517563
     }
   },
   {
     "text": "Why are you so mad? OP said Usain Bolt hit 27.8 mph in a 200m sprint, like he is trying to say that this invalidates how fast Connor is while playing hockey. People are just explaining that isn't much of a point when comparing with a hockey player casually skating 24mph while stick handling past another team wearing full hockey gear with a max rink size of 61 meters. If you really want to compare how the fastest sprinter in the world compares to how fast Connor can skate, line them both up with the same distance. 200m of ice and 200m of track. It's just such a silly thing to try and compare with such different variables.",
     "true": "analysis",
     "pred": "analysis",
-    "confidence": 0.4471132457256317,
+    "confidence": 0.6292930841445923,
     "probs": {
-      "reaction": 0.3730787932872772,
-      "hot_take": 0.17980797588825226,
-      "analysis": 0.4471132457256317
+      "reaction": 0.24194948375225067,
+      "hot_take": 0.12875749170780182,
+      "analysis": 0.6292930841445923
     }
   },
   {
     "text": "One of the few left. Happy for you that you still have a team. I was a lifelong fan, loyal to the soil, rooted for em just the same wether they were 14-2 or 2-14, but I for one cannot get behind rooting for a Los Angeles team. Even if it is my once revered Chargers. Hurts me still, had to pack away all my gear, every Tomlinson jersey, every Neal jersey, every hat, every stupid fucking foam finger I\u2019d collected my 34 years as a fan, and it sucks. If they ever come back (sometime after 2040, but still) Id root for em with all the same passion and zest as I ever had, just cant root for an LA team, period. Tl;dr- sob sob cry cry, Ill be a SAN DIEGO Chargers fan till I die",
     "true": "reaction",
-    "pred": "reaction",
-    "confidence": 0.41188743710517883,
+    "pred": "analysis",
+    "confidence": 0.4294743537902832,
     "probs": {
-      "reaction": 0.41188743710517883,
-      "hot_take": 0.2157704383134842,
-      "analysis": 0.37234219908714294
+      "reaction": 0.370527058839798,
+      "hot_take": 0.19999857246875763,
+      "analysis": 0.4294743537902832
     }
   },
   {
     "text": "Correct answer. Two wideouts crossed at the line, the two defenders stayed with the outside man while Williams crossed over and no one was on him. Blown coverage because the crossing route confused them and they didn't adjust in the moment.",
     "true": "analysis",
     "pred": "analysis",
-    "confidence": 0.4091322124004364,
+    "confidence": 0.5546190738677979,
     "probs": {
-      "reaction": 0.379888653755188,
-      "hot_take": 0.21097908914089203,
-      "analysis": 0.4091322124004364
+      "reaction": 0.26204022765159607,
+      "hot_take": 0.18334071338176727,
+      "analysis": 0.5546190738677979
     }
   },
   {
     "text": "What a K. Hunt...s",
     "true": "reaction",
     "pred": "reaction",
-    "confidence": 0.48888805508613586,
+    "confidence": 0.5291810035705566,
     "probs": {
-      "reaction": 0.48888805508613586,
-      "hot_take": 0.24318674206733704,
-      "analysis": 0.2679252028465271
+      "reaction": 0.5291810035705566,
+      "hot_take": 0.2609219551086426,
+      "analysis": 0.2098970264196396
     }
   },
   {
     "text": "The hero we need, but don't deserve.",
     "true": "reaction",
     "pred": "reaction",
-    "confidence": 0.470296174287796,
+    "confidence": 0.5516395568847656,
     "probs": {
-      "reaction": 0.470296174287796,
-      "hot_take": 0.24662429094314575,
-      "analysis": 0.2830795347690582
+      "reaction": 0.5516395568847656,
+      "hot_take": 0.2542209029197693,
+      "analysis": 0.1941395401954651
     }
   },
   {
     "text": "You\u2019re right, no one will talk about how a man who barrels through 300 pounders for a living cant hold himself back physically when a female antagonizes him.",
-    "true": "reaction",
+    "true": "hot_take",
     "pred": "reaction",
-    "confidence": 0.4510677456855774,
+    "confidence": 0.5280600786209106,
     "probs": {
-      "reaction": 0.4510677456855774,
-      "hot_take": 0.2032826542854309,
-      "analysis": 0.3456495404243469
+      "reaction": 0.5280600786209106,
+      "hot_take": 0.1868811696767807,
+      "analysis": 0.28505876660346985
     }
   },
   {
     "text": "Right. And I bet you'd also bet it's harder to do on foot than on a bike. And you'd be right that the top speed on foot is less than the top speed on ice is less than the top speed on bike. But the 100m times (an NHL rink is 61m; I'm not figuring out his exact distance) aren't all that different as it's such a short distance to use your legs to accelerate in. The top speed difference on skates or bike comes from the fact that you don't lose your momentum as quickly once you've got it, so you can add more to it. But you need distance in which to do that.",
     "true": "analysis",
     "pred": "analysis",
-    "confidence": 0.49133598804473877,
+    "confidence": 0.6708897352218628,
     "probs": {
-      "reaction": 0.33766937255859375,
-      "hot_take": 0.17099463939666748,
-      "analysis": 0.49133598804473877
+      "reaction": 0.20738273859024048,
+      "hot_take": 0.12172757089138031,
+      "analysis": 0.6708897352218628
     }
   },
   {
     "text": "99.99% of people in the military would quit if given the choice between the military or playing in the NFL. Ipso facto NFL players are better.",
     "true": "hot_take",
     "pred": "analysis",
-    "confidence": 0.4310705065727234,
+    "confidence": 0.5363385081291199,
     "probs": {
-      "reaction": 0.3506302833557129,
-      "hot_take": 0.21829913556575775,
-      "analysis": 0.4310705065727234
+      "reaction": 0.2954351603984833,
+      "hot_take": 0.16822639107704163,
+      "analysis": 0.5363385081291199
     }
   },
   {
     "text": "Made in China. Thanks China.",
     "true": "reaction",
     "pred": "reaction",
-    "confidence": 0.4706224501132965,
+    "confidence": 0.5333637595176697,
     "probs": {
-      "reaction": 0.4706224501132965,
-      "hot_take": 0.22971226274967194,
-      "analysis": 0.29966530203819275
+      "reaction": 0.5333637595176697,
+      "hot_take": 0.24703702330589294,
+      "analysis": 0.219599187374115
     }
   },
   {
     "text": "Yes and if he did hit those speeds, he may be easier to dodge, as long as you have enough time to predict where he's going and you have enough speed. It's easy to hit someone when they're going slow, but if you're going too fast, you can't be as shifty. Plus he would get a charging penalty. McDavid is shifty enough at the right speed, and has hands that backs the defenseman up, rather than them trying to step on him.",
     "true": "analysis",
     "pred": "analysis",
-    "confidence": 0.4657575786113739,
+    "confidence": 0.6632522940635681,
     "probs": {
-      "reaction": 0.3399165868759155,
-      "hot_take": 0.194325789809227,
-      "analysis": 0.4657575786113739
+      "reaction": 0.1869230419397354,
+      "hot_take": 0.14982469379901886,
+      "analysis": 0.6632522940635681
     }
   },
   {
     "text": "The thing I don't like about this drill is most people have a strong side and a weak side for turning. And if you're right-handed as most people are (not necessarily right shooting), you usually turn left better. So McDavid has an advantage in this drill, assuming they're both right-handed. They should make them take one corner one way and the other corner the other way. You can see it in how Mackinnon doesn't do cross-overs in the turn. I bet if he were turning to his left he could get some cross-overs in.",
     "true": "analysis",
     "pred": "analysis",
-    "confidence": 0.49409300088882446,
+    "confidence": 0.6869257688522339,
     "probs": {
-      "reaction": 0.32241520285606384,
-      "hot_take": 0.1834917962551117,
-      "analysis": 0.49409300088882446
+      "reaction": 0.18516695499420166,
+      "hot_take": 0.12790733575820923,
+      "analysis": 0.6869257688522339
     }
   },
   {
     "text": "Thank u for your service",
     "true": "reaction",
     "pred": "reaction",
-    "confidence": 0.4534977972507477,
+    "confidence": 0.5238484144210815,
     "probs": {
-      "reaction": 0.4534977972507477,
-      "hot_take": 0.2643871307373047,
-      "analysis": 0.28211507201194763
+      "reaction": 0.5238484144210815,
+      "hot_take": 0.22870373725891113,
+      "analysis": 0.2474479377269745
     }
   },
   {
     "text": "[I'm just gonna leave this here]( for some background info, Mike Tyson was 5'10\" and 217lbs in this fight, Marvis Fraizer (the son of one of the greatest boxer's of all time Joe Fraizer) is 6ft tall and 210lbs both of them are pure muscle compared to Mayweather is 5'8\" and 150lbs and well known for winning by working the point totals with footwork and baby jabs like an accountant (which is why lots of people who aren't really into boxing complain his fights are boring)",
     "true": "analysis",
     "pred": "analysis",
-    "confidence": 0.468402236700058,
+    "confidence": 0.6115053296089172,
     "probs": {
-      "reaction": 0.3271465301513672,
-      "hot_take": 0.20445124804973602,
-      "analysis": 0.468402236700058
+      "reaction": 0.2529163360595703,
+      "hot_take": 0.13557833433151245,
+      "analysis": 0.6115053296089172
     }
   },
   {
     "text": "MLS is trying to sell tickets for upper deck tickets at $200+ at face. There will be empty seats",
     "true": "hot_take",
     "pred": "analysis",
-    "confidence": 0.3999708890914917,
+    "confidence": 0.4149061441421509,
     "probs": {
-      "reaction": 0.3827918767929077,
-      "hot_take": 0.21723723411560059,
-      "analysis": 0.3999708890914917
+      "reaction": 0.3653676509857178,
+      "hot_take": 0.21972623467445374,
+      "analysis": 0.4149061441421509
     }
   },
   {
     "text": "I had to stop watching basketball because I could never understand this. You have to be bouncing the ball to walk, and after you stop bouncing you can put your foot down (if it's up), then pick up your other foot, put it down, then pick up your other foot, put it down, then pick up your other foot, but you can't put it down? I don't see how that's different from walking for three steps.",
     "true": "analysis",
     "pred": "analysis",
-    "confidence": 0.4450823664665222,
+    "confidence": 0.6469987630844116,
     "probs": {
-      "reaction": 0.36240842938423157,
-      "hot_take": 0.19250915944576263,
-      "analysis": 0.4450823664665222
+      "reaction": 0.2345639318227768,
+      "hot_take": 0.1184372752904892,
+      "analysis": 0.6469987630844116
     }
   },
   {
     "text": "Harden got mad that he shoved him and did the \"whatever..fuck you\" hand swipe and he hit the ball on the way down.",
     "true": "reaction",
-    "pred": "reaction",
-    "confidence": 0.40460532903671265,
+    "pred": "analysis",
+    "confidence": 0.3930530846118927,
     "probs": {
-      "reaction": 0.40460532903671265,
-      "hot_take": 0.22149072587490082,
-      "analysis": 0.37390390038490295
+      "reaction": 0.37818998098373413,
+      "hot_take": 0.22875694930553436,
+      "analysis": 0.3930530846118927
     }
   },
   {
     "text": "Watch New England sweep him up\ud83d\ude44",
     "true": "hot_take",
     "pred": "reaction",
-    "confidence": 0.4665102958679199,
+    "confidence": 0.4985165596008301,
     "probs": {
-      "reaction": 0.4665102958679199,
-      "hot_take": 0.24398763477802277,
-      "analysis": 0.2895020842552185
+      "reaction": 0.4985165596008301,
+      "hot_take": 0.26203709840774536,
+      "analysis": 0.23944635689258575
     }
   },
   {
     "text": "I had Mike Williams on my fantasy team all year and he never produced. Now that I'm out of the playoffs, he decides to have the game of his life.",
     "true": "hot_take",
     "pred": "reaction",
-    "confidence": 0.4076070189476013,
+    "confidence": 0.43510594964027405,
     "probs": {
-      "reaction": 0.4076070189476013,
-      "hot_take": 0.21558737754821777,
-      "analysis": 0.3768056333065033
+      "reaction": 0.43510594964027405,
+      "hot_take": 0.25343209505081177,
+      "analysis": 0.3114619255065918
     }
   },
   {
     "text": "Sure, it has worked for Barca, why not?",
     "true": "hot_take",
     "pred": "reaction",
-    "confidence": 0.470367431640625,
+    "confidence": 0.5456955432891846,
     "probs": {
-      "reaction": 0.470367431640625,
-      "hot_take": 0.2187652885913849,
-      "analysis": 0.3108673095703125
+      "reaction": 0.5456955432891846,
+      "hot_take": 0.24328061938285828,
+      "analysis": 0.21102377772331238
     }
   },
   {
     "text": "Did he kick one or multiple? Your title contradicts",
     "true": "reaction",
     "pred": "reaction",
-    "confidence": 0.45814764499664307,
+    "confidence": 0.5615015625953674,
     "probs": {
-      "reaction": 0.45814764499664307,
-      "hot_take": 0.23025545477867126,
-      "analysis": 0.31159695982933044
+      "reaction": 0.5615015625953674,
+      "hot_take": 0.19692577421665192,
+      "analysis": 0.24157261848449707
     }
   },
   {
     "text": "Any Audio version ?",
     "true": "reaction",
     "pred": "reaction",
-    "confidence": 0.4331038296222687,
+    "confidence": 0.4934666156768799,
     "probs": {
-      "reaction": 0.4331038296222687,
-      "hot_take": 0.26693764328956604,
-      "analysis": 0.29995858669281006
+      "reaction": 0.4934666156768799,
+      "hot_take": 0.2777951955795288,
+      "analysis": 0.2287381887435913
     }
   },
   {
     "text": "Watch how fast McDavid is moving in this clip compared to all the people on the other team who don\u2019t even have the puck. The forward right behind him isn\u2019t even on camera when McDavid gets to the net. The defenceman at the blue line when McDavid gets the puck has a 25 foot head start and by the time McDavid scores he can barely reach him with his stick. This isn\u2019t a men\u2019s league game, he is doing this to the best hockey players in the world.",
     "true": "analysis",
     "pred": "analysis",
-    "confidence": 0.4687180817127228,
+    "confidence": 0.6533556580543518,
     "probs": {
-      "reaction": 0.32838892936706543,
-      "hot_take": 0.2028929740190506,
-      "analysis": 0.4687180817127228
+      "reaction": 0.2021167129278183,
+      "hot_take": 0.1445276141166687,
+      "analysis": 0.6533556580543518
     }
   }
 ]

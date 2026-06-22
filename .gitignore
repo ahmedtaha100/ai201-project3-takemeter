@@ -12,3 +12,7 @@ distilbert-takemeter/
 *.bin
 # synthetic smoke-test scratch (NOT the deliverable dataset)
 data/_smoketest/
+# personal demo aids — NOT part of the deliverable, keep local only
+DEMO_SCRIPT.md
+DEMO_TELEPROMPTER.docx
+DEMO_TELEPROMPTER.html

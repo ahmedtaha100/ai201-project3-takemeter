@@ -1,25 +1,25 @@
-**Fine-tuned DistilBERT** — accuracy **0.737**, macro-F1 **0.549** (n=38)
+**Fine-tuned DistilBERT** — accuracy **0.632**, macro-F1 **0.479** (n=38)
 
 | label | precision | recall | F1 | support |
 |---|---|---|---|---|
-| reaction | 0.727 | 0.941 | 0.821 | 17 |
-| hot_take | 0.000 | 0.000 | 0.000 | 8 |
-| analysis | 0.750 | 0.923 | 0.828 | 13 |
+| reaction | 0.632 | 0.750 | 0.686 | 16 |
+| hot_take | 0.000 | 0.000 | 0.000 | 9 |
+| analysis | 0.632 | 0.923 | 0.750 | 13 |
 
 **Fine-tuned confusion matrix**
 
 | true ↓ / pred → | reaction | hot_take | analysis | **total** |
 |---|---|---|---|---|
-| **reaction** | 16 | 0 | 1 | 17 |
-| **hot_take** | 5 | 0 | 3 | 8 |
+| **reaction** | 12 | 0 | 4 | 16 |
+| **hot_take** | 6 | 0 | 3 | 9 |
 | **analysis** | 1 | 0 | 12 | 13 |
 
-**Zero-shot Groq baseline (llama-3.1-8b-instant)** — accuracy **0.816**, macro-F1 **0.779** (n=38)
+**Zero-shot Groq baseline (llama-3.3-70b-versatile)** — accuracy **0.921**, macro-F1 **0.901** (n=38)
 
 | label | precision | recall | F1 | support |
 |---|---|---|---|---|
-| reaction | 0.789 | 0.882 | 0.833 | 17 |
-| hot_take | 0.800 | 0.500 | 0.615 | 8 |
-| analysis | 0.857 | 0.923 | 0.889 | 13 |
+| reaction | 0.889 | 1.000 | 0.941 | 16 |
+| hot_take | 1.000 | 0.667 | 0.800 | 9 |
+| analysis | 0.929 | 1.000 | 0.963 | 13 |
 
-**Fine-tuned − baseline macro-F1: -0.230**
+**Fine-tuned − baseline macro-F1: -0.423**
