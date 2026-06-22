@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Stretch: deployed interface. Paste an r/nba comment -> predicted label + confidence.
+Stretch: deployed interface. Paste an r/sports comment -> predicted label + confidence.
 
     python src/app.py            # launches a local Gradio app
 
@@ -56,13 +56,13 @@ def classify(comment: str) -> str:
 
 
 with gr.Blocks(title="TakeMeter") as demo:
-    gr.Markdown("# 🏀 TakeMeter\nClassify an r/nba comment: **reaction**, **hot_take**, or **analysis**.")
-    inp = gr.Textbox(label="r/nba comment", lines=3, placeholder="e.g. Wemby is already a top-5 player")
+    gr.Markdown("# TakeMeter\nClassify an r/sports comment: **reaction**, **hot_take**, or **analysis**.")
+    inp = gr.Textbox(label="r/sports comment", lines=3, placeholder="e.g. He's already a top-5 player and it's not close")
     out = gr.Markdown()
     gr.Button("Classify").click(classify, inputs=inp, outputs=out)
     gr.Examples(
-        ["WHAT A SHOT ARE YOU KIDDING ME", "LeBron is washed, admit it",
-         "They trap Brunson in the PnR and nobody else creates, so the half-court offense dies"],
+        ["WHAT A GOAL ARE YOU KIDDING ME", "He's washed, time to admit it",
+         "They keep blitzing on third down, so until the back picks it up the play-action never develops and the offense stalls"],
         inputs=inp,
     )
 

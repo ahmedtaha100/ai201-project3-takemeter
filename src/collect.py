@@ -1,63 +1,41 @@
 #!/usr/bin/env python3
 """
-Collect public r/nba comments via Reddit's public JSON endpoints — no API key, no PRAW.
+Collect real r/sports comments for TakeMeter.
 
-WHY THIS IS A SEPARATE STEP YOU RUN: Reddit blocks data-center / cloud egress IPs (HTTP 403)
-regardless of User-Agent, so this could not be run from the build environment. Run it once
-from a normal residential connection (your Mac) and it works with a polite delay.
+Reddit's public JSON endpoints now return HTTP 403 to non-authenticated clients
+(an anti-bot wall) even from a residential IP, so live scraping is not reliable.
+Instead this pulls real r/sports comments from a public Reddit archive on the
+Hugging Face Hub (HuggingFaceGECLM/REDDIT_comments, PushShift dumps 2006-2023),
+which is the same underlying source PushShift always provided.
 
-    python src/collect.py --target 400 --out data/raw_comments.csv
+    python src/collect.py --target 900 --out data/raw_comments.csv
 
-It pulls from a MIX of sources so the eventual label distribution can be balanced:
-  - r/nba/comments.json            (recent flat comments across the sub — bulk, reaction-heavy)
-  - top posts' comment threads     (Post Game Threads + Daily/Discussion threads -> hot takes
-                                    and analysis), to make sure `analysis` clears 20%.
+It streams the r/sports split, cleans each comment (strips URLs, user/sub mentions,
+quote lines, bot/automod posts, deleted/removed, too-short and link-only), dedupes,
+and keeps a MIX of comment lengths so the reasoned `analysis` class is reachable and
+the bulk `reaction` class is represented. Output columns match the rest of the
+pipeline: id,text,score,permalink,thread,source. Labeling happens in src/label.py.
 
-It filters out [deleted]/[removed], bot/automod, very short or link-only comments, dedupes,
-and writes a CSV of raw (unlabeled) comments. Labeling happens in src/label.py.
-
-stdlib only — nothing to install.
+Needs: datasets, pandas (already in requirements.txt).
 """
 import argparse
 import csv
 import html
-import json
 import re
 import sys
-import time
-import urllib.request
 
-UA = "takemeter-research/0.1 (CodePath AI201 student project; contact: you@example.com)"
-SLEEP = 2.5  # be polite to Reddit's unauthenticated rate limit
+DATASET = "HuggingFaceGECLM/REDDIT_comments"
+SPLIT = "sports"
 
-
-def _get(url: str, retries: int = 3):
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-    for attempt in range(retries):
-        try:
-            with urllib.request.urlopen(req, timeout=30) as r:
-                return json.load(r)
-        except Exception as e:  # noqa: BLE001
-            code = getattr(e, "code", None)
-            if code == 429:
-                time.sleep(SLEEP * (attempt + 2))
-                continue
-            if attempt == retries - 1:
-                print(f"  ! request failed ({type(e).__name__} {code}): {url}", file=sys.stderr)
-                return None
-            time.sleep(SLEEP)
-    return None
-
-
-BOT_MARKERS = ("i am a bot", "^(i am a bot", "performed automatically", "AutoModerator")
+BOT_MARKERS = ("i am a bot", "performed automatically", "automoderator", "^(i am a bot")
 JUNK = {"[deleted]", "[removed]", ""}
 
 
 def clean(body: str) -> str:
     body = html.unescape(body or "")
-    body = re.sub(r"https?://\S+", "", body)          # strip URLs
-    body = re.sub(r"/?u/\w+|/?r/\w+", "", body)        # strip user/sub mentions
-    body = re.sub(r"&gt;.*", "", body)                 # strip quote lines
+    body = re.sub(r"https?://\S+", "", body)        # strip URLs
+    body = re.sub(r"/?u/\w+|/?r/\w+", "", body)      # strip user/sub mentions
+    body = re.sub(r"^&gt;.*$", "", body, flags=re.M)  # strip quoted lines
     body = re.sub(r"\s+", " ", body).strip()
     return body
 
@@ -66,112 +44,89 @@ def usable(body: str) -> bool:
     if body in JUNK:
         return False
     low = body.lower()
-    if any(m.lower() in low for m in BOT_MARKERS):
+    if any(m in low for m in BOT_MARKERS):
         return False
     words = body.split()
-    if len(words) < 3 or len(body) < 12:    # too short to carry discourse
+    if len(words) < 4 or len(body) < 16:   # too short to carry discourse
         return False
-    if len(body) > 1200:                     # essays are rare; keep it comment-sized
+    if len(body) > 1200:                    # keep it comment-sized
         return False
     if not re.search(r"[a-zA-Z]", body):
+        return False
+    # drop pure one-liner link/image leftovers and quotes
+    if low.startswith(("edit:", "deleted", "this comment")):
         return False
     return True
 
 
-def collect_flat(subreddit: str, n: int):
-    """Recent comments across the whole subreddit, paginated."""
-    out, after, calls = {}, None, 0
-    while len(out) < n and calls < 40:
-        url = f"https://www.reddit.com/r/{subreddit}/comments.json?limit=100&raw_json=1"
-        if after:
-            url += f"&after={after}"
-        data = _get(url)
-        calls += 1
-        if not data:
-            break
-        children = data.get("data", {}).get("children", [])
-        if not children:
-            break
-        for c in children:
-            d = c.get("data", {})
-            body = clean(d.get("body", ""))
-            if usable(body):
-                out[d.get("id")] = {
-                    "id": d.get("id"), "text": body, "score": d.get("score", 0),
-                    "permalink": d.get("permalink", ""), "thread": d.get("link_title", ""),
-                    "source": "flat_comments",
-                }
-        after = data.get("data", {}).get("after")
-        if not after:
-            break
-        time.sleep(SLEEP)
-    return out
-
-
-def collect_threads(subreddit: str, n: int):
-    """Top-level comments from discussion-style threads (analysis/hot-take rich)."""
-    out = {}
-    # Pull hot + top posts, prefer Post Game / Daily / Discussion threads.
-    for sort, extra in (("hot", ""), ("top", "&t=week")):
-        listing = _get(
-            f"https://www.reddit.com/r/{subreddit}/{sort}.json?limit=50&raw_json=1{extra}"
-        )
-        time.sleep(SLEEP)
-        if not listing:
-            continue
-        posts = listing.get("data", {}).get("children", [])
-        matched = [
-            p["data"] for p in posts
-            if any(k in (p["data"].get("title", "").lower())
-                   for k in ("post game", "game thread", "daily", "discussion", "thoughts", "[serious]"))
-        ]
-        fallback = [p["data"] for p in posts]
-        wanted = (matched or fallback)[:8]   # cap both branches, not just the fallback
-        for post in wanted:
-            if len(out) >= n:
-                break
-            permalink = post.get("permalink", "")
-            data = _get(f"https://www.reddit.com{permalink}.json?limit=100&raw_json=1&sort=top")
-            time.sleep(SLEEP)
-            if not data or len(data) < 2:
-                continue
-            for c in data[1].get("data", {}).get("children", []):
-                if c.get("kind") == "more":   # "kind" is on the child, not its data
-                    continue
-                d = c.get("data", {})
-                body = clean(d.get("body", ""))
-                if usable(body):
-                    out[d.get("id")] = {
-                        "id": d.get("id"), "text": body, "score": d.get("score", 0),
-                        "permalink": d.get("permalink", ""), "thread": post.get("title", ""),
-                        "source": "thread",
-                    }
-    return out
+def bucket(body: str) -> str:
+    n = len(body)
+    if n <= 80:
+        return "short"   # reaction-leaning
+    if n <= 260:
+        return "mid"
+    return "long"        # analysis-leaning
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--subreddit", default="nba")
-    ap.add_argument("--target", type=int, default=400, help="raw comments to collect (label/filter down to >=250)")
+    ap.add_argument("--target", type=int, default=900, help="raw comments to collect")
     ap.add_argument("--out", default="data/raw_comments.csv")
+    ap.add_argument("--scan-limit", type=int, default=120000, help="max stream rows to scan")
     args = ap.parse_args()
 
-    print(f"Collecting from r/{args.subreddit} (target {args.target} raw)...")
-    merged = {}
-    merged.update(collect_threads(args.subreddit, args.target // 2))
-    print(f"  thread comments: {len(merged)}")
-    merged.update(collect_flat(args.subreddit, args.target - len(merged)))
-    print(f"  + flat comments: {len(merged)} total unique")
+    from datasets import load_dataset
 
-    rows = sorted(merged.values(), key=lambda r: -r["score"])
+    # Length-balanced quotas so `analysis` (long, reasoned) is reachable, not drowned
+    # out by the much more common short reactions.
+    quota = {"short": int(args.target * 0.30),
+             "mid":   int(args.target * 0.40),
+             "long":  args.target - int(args.target * 0.30) - int(args.target * 0.40)}
+    got = {"short": 0, "mid": 0, "long": 0}
+
+    print(f"Streaming r/{SPLIT} from {DATASET} (target {args.target}, quotas {quota})...")
+    ds = load_dataset(DATASET, split=SPLIT, streaming=True)
+
+    seen_text = set()
+    rows = {}
+    scanned = 0
+    for r in ds:
+        scanned += 1
+        if scanned > args.scan_limit:
+            break
+        body = clean(r.get("body", ""))
+        if not usable(body):
+            continue
+        key = body.lower()
+        if key in seen_text:
+            continue
+        b = bucket(body)
+        if got[b] >= quota[b]:
+            if all(got[k] >= quota[k] for k in quota):
+                break
+            continue
+        seen_text.add(key)
+        cid = r.get("id") or f"row{scanned}"
+        rows[cid] = {
+            "id": cid,
+            "text": body,
+            "score": r.get("score", ""),
+            "permalink": r.get("permalink", ""),
+            "thread": r.get("link_id", ""),
+            "source": f"hf:{DATASET}#{SPLIT}",
+        }
+        got[b] += 1
+        if sum(got.values()) % 100 == 0:
+            print(f"  scanned {scanned:>6}  collected {sum(got.values())}  ({got})")
+
+    out_rows = list(rows.values())
     with open(args.out, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=["id", "text", "score", "permalink", "thread", "source"])
         w.writeheader()
-        w.writerows(rows)
-    print(f"Wrote {len(rows)} raw comments -> {args.out}")
-    if len(rows) < 300:
-        print("  NOTE: <300 raw; re-run later (more threads will have posted) to build a buffer "
-              "for balancing to >=250 labeled with each class >=20%.")
+        w.writerows(out_rows)
+    print(f"\nWrote {len(out_rows)} raw comments -> {args.out}  (scanned {scanned} rows; buckets {got})")
+    if len(out_rows) < 300:
+        print("  NOTE: <300 raw collected; raise --scan-limit.", file=sys.stderr)
 
 
 if __name__ == "__main__":

@@ -118,7 +118,7 @@ def main():
                    md_confusion(np.array(s["confusion_matrix"]), "Fine-tuned confusion matrix"), ""]
     if bl:
         s = summarize(bl); results["baseline_zero_shot"] = s
-        blocks += [md_metrics("Zero-shot Groq baseline (llama-3.3-70b)", s), ""]
+        blocks += [md_metrics("Zero-shot Groq baseline (llama-3.1-8b-instant)", s), ""]
     if ft and bl:
         d = results["fine_tuned"]["macro_f1"] - results["baseline_zero_shot"]["macro_f1"]
         results["delta_macro_f1_ft_minus_baseline"] = round(d, 4)

@@ -17,6 +17,7 @@ import json
 import os
 import re
 import sys
+import time
 
 import pandas as pd
 from dotenv import load_dotenv
@@ -25,7 +26,29 @@ from labels import LABELS, build_prompt
 
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-LLM_MODEL = "llama-3.3-70b-versatile"
+# Independent zero-shot baseline model, deliberately NOT the same model that pre-labeled the
+# gold set (that was llama-4-scout-17b), so the comparison is not circular.
+LLM_MODEL = "llama-3.1-8b-instant"
+
+
+def chat_with_backoff(client, content, max_tokens, max_retries=8):
+    """One chat completion, retrying on rate limits / transient errors with backoff."""
+    delay = 4.0
+    for attempt in range(max_retries):
+        try:
+            resp = client.chat.completions.create(
+                model=LLM_MODEL,
+                messages=[{"role": "user", "content": content}],
+                temperature=0, max_tokens=max_tokens,
+            )
+            return resp.choices[0].message.content or ""
+        except Exception as e:  # noqa: BLE001
+            if attempt == max_retries - 1:
+                raise
+            is_rate = "RateLimit" in type(e).__name__ or "429" in str(e)
+            time.sleep(delay if is_rate else 2.0)
+            delay = min(delay * 1.6, 30.0)
+    return ""
 
 
 def _key_ok() -> bool:
@@ -67,15 +90,10 @@ def main():
     rows, unparsed = [], 0
     for i, r in test.iterrows():
         try:
-            resp = client.chat.completions.create(
-                model=LLM_MODEL,
-                messages=[{"role": "user", "content": build_prompt(r.text)}],
-                temperature=0,
-                max_tokens=10,
-            )
-            raw = resp.choices[0].message.content or ""
+            raw = chat_with_backoff(client, build_prompt(r.text), max_tokens=24)
         except Exception as e:  # noqa: BLE001
             raw = f"__error__ {type(e).__name__}"
+        time.sleep(0.2)
         pred = parse_label(raw)
         if not pred:
             unparsed += 1

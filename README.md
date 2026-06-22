@@ -1,234 +1,252 @@
-# TakeMeter — classifying r/nba comment discourse
+# TakeMeter: classifying r/sports comment discourse
 
-A text classifier that sorts r/nba **comments** into three kinds of discourse —
-`reaction`, `hot_take`, `analysis` — and compares a **fine-tuned DistilBERT** against a
-**zero-shot Groq `llama-3.3-70b` baseline** on the same held-out test set.
+A text classifier that sorts r/sports **comments** into three kinds of discourse,
+`reaction`, `hot_take`, and `analysis`, and compares a **fine-tuned DistilBERT** against a
+**zero-shot Groq `llama-3.1-8b-instant` baseline** on the same held-out test set.
 
-Design notes are in [planning.md](planning.md). Run order and the (two) environment
-blockers are in [STATUS.md](STATUS.md).
+Design notes are in [planning.md](planning.md). Run order is in [STATUS.md](STATUS.md).
 
-> **⚠️ Results status.** This repo is built and the pipeline is verified end-to-end on a
-> synthetic smoke set, but the **numeric results below are produced by running the pipeline
-> on real data + a Groq key** (see [STATUS.md](STATUS.md)). Sections that need that run are
-> marked **`RESULTS PENDING`** and show the exact table format the scripts emit into
-> [artifacts/report_blocks.md](artifacts/report_blocks.md); paste those in after the run.
+> **A note on the data source.** The plan was to scrape r/nba live, but Reddit now returns
+> HTTP 403 to unauthenticated clients (an anti-bot wall), so live collection was not possible
+> from this machine. I switched to real r/sports comments from a public Reddit archive on the
+> Hugging Face Hub ([HuggingFaceGECLM/REDDIT_comments](https://huggingface.co/datasets/HuggingFaceGECLM/REDDIT_comments),
+> PushShift dumps, 2006-2023). The comments are real; only the collection channel changed. The
+> taxonomy is about *how* people talk, not which sport, so the task is unchanged.
 
 ---
 
 ## 1. Community choice and reasoning
 
-**r/nba — its comments, not its submissions.** r/nba is one of Reddit's largest sports
-communities, and its actual *talk* happens in comments: submissions are mostly news links,
-highlights, and auto-posted Game / Post-Game Threads. Inside those threads, the same game
-produces pure emotional venting, throwaway bold opinions, and multi-sentence tactical
-breakdowns — often a few replies apart. That spread is what makes the task interesting: the
-three modes come from the same people about the same events, so the classifier must key on
-*how* something is said (claim? evidence? just emotion?) rather than *what* it is about.
-Topic is nearly useless as a signal here — which is the point. It is also practical: high
-comment volume, public, English, readable through the JSON endpoints without a login.
+**r/sports, its comments, not its submissions.** r/sports is a large, general sports community,
+and the interesting language is in the comments. Submissions are mostly links and highlight
+clips. Underneath them the same clip produces three very different things: pure emotional
+venting, throwaway bold opinions, and the occasional multi-sentence tactical breakdown, often a
+few replies apart. That spread is the whole point. The three modes come from the same people
+about the same events, so the classifier has to key on *how* something is said (claim? evidence?
+just emotion?) rather than *what* it is about. Topic is almost useless as a signal here, which is
+what makes it a real test. It is also practical: high comment volume, public, English.
 
 ## 2. Label taxonomy
 
-Applied with a 2-question decision tree: **Q1** does the comment make a debatable basketball
-claim/opinion/prediction/ranking? *No → `reaction`.* **Q2** if yes, is the claim backed by a
-real explanatory/causal chain or multiple pieces of evidence? *No → `hot_take`. Yes →
-`analysis`.* The tree forces exactly one label (mutually exclusive) and covers ≥90% of
-comments without an "other" bucket (off-topic/spam is dropped at collection, not labeled).
+Applied with a 2-question decision tree. **Q1:** does the comment make a debatable sports
+claim, opinion, prediction, or ranking? If no, it is `reaction`. **Q2:** if yes, is the claim
+backed by a real explanatory chain or multiple pieces of evidence? If no, `hot_take`. If yes,
+`analysis`. The tree forces exactly one label and covers the comments without an "other" bucket
+(off-topic and spam are dropped during collection, not labeled).
 
 | label | definition | example 1 | example 2 |
 |---|---|---|---|
-| **reaction** | Emotional, in-the-moment expression making **no** substantive basketball claim. | "WHAT A SHOT ARE YOU KIDDING ME" | "bro I'm crying lmao we're so back" |
-| **hot_take** | A strongly-stated, debatable opinion/claim/prediction asserted with little/no support (a lone stat is garnish). | "LeBron is washed, time to admit it" | "Wemby is already a top-5 player" |
-| **analysis** | A reasoned argument explaining **why** via a causal chain or stacked evidence. | "They go under his screens, so until he hits the pull-up the second unit's spacing collapses." | "His TS% dropped because he's taking contested late-clock mid-range looks — it's a lineup problem, not effort." |
+| **reaction** | Emotional, in-the-moment expression that makes **no** substantive sports claim. | "WHAT A GOAL ARE YOU KIDDING ME" | "bro I'm crying lmao we're so back" |
+| **hot_take** | A strongly-stated, debatable opinion or prediction with little or no support (a lone stat is garnish). | "He's washed, time to admit it" | "She's already a top-5 athlete of all time and it's not close" |
+| **analysis** | A reasoned argument that explains **why**, through a causal chain or stacked evidence. | "They keep blitzing on third down, so until the back picks it up the play-action never develops and the offense stalls." | "His efficiency dropped because he's taking contested looks late in the clock now that the spacing collapsed, it's a scheme problem." |
 
 ## 3. Data collection
 
-**Source.** Reddit public JSON endpoints via [`src/collect.py`](src/collect.py) (no API key,
-no PRAW): the `r/nba/comments.json` firehose (bulk, reaction-heavy) plus top-level comments
-from discussion-style threads (Post-Game / Daily / Discussion), which is where `hot_take` and
-`analysis` concentrate. The collector strips deleted/removed/bot/link-only/too-short comments
-and dedupes.
+**Source.** Real r/sports comments from the public PushShift archive on Hugging Face (see the
+note at the top). [`src/collect.py`](src/collect.py) streams the r/sports split, strips
+deleted/removed/bot/link-only and too-short comments, dedupes, and keeps a mix of comment
+lengths so the reasoned `analysis` class is reachable instead of being drowned out by short
+reactions. It collected **900** raw comments.
 
-**Labeling process.** Every comment is pre-labeled by Groq `llama-3.3-70b-versatile`
-([`src/label.py`](src/label.py)) with a confidence tag; low/medium-confidence rows are routed
-to [`data/needs_review.csv`](data/needs_review.csv) for a human pass. **Every pre-label is
-AI-assisted and human-reviewed before use** — provenance is tracked in the `notes` column
-(`groq-prelabel conf=…`). This annotation assistance is disclosed in §9.
+**Labeling process.** Every comment is pre-labeled by Groq `llama-4-scout-17b`
+([`src/label.py`](src/label.py)) in batches, with a confidence tag. **Every label is
+AI-pre-labeled and a sample is routed to [`data/needs_review.csv`](data/needs_review.csv) for a
+human pass** (38 rows). Provenance is tracked in the `notes` column. This annotation assistance
+is disclosed in §9. From the 900 raw comments I labeled 360 and then **downsampled the two
+larger classes** to balance the set (keeping every `hot_take`, the rare class), landing on **252
+labeled comments**.
 
-**Label distribution.** `RESULTS PENDING` — `src/label.py` prints it and flags any class
-<20% or >70%. Target ≈ 40 / 35 / 25 across `reaction / hot_take / analysis` (every class
-≥20%, none >70%); the thread source exists to keep `analysis` above 20%.
+**Label distribution (252 comments):**
 
 | label | count | % |
 |---|---|---|
-| reaction | _pending_ | _pending_ |
-| hot_take | _pending_ | _pending_ |
-| analysis | _pending_ | _pending_ |
+| reaction | 115 | 45.6% |
+| hot_take | 52 | 20.6% |
+| analysis | 85 | 33.7% |
 
-**Three genuinely difficult examples and the decisions** (from the pre-annotation
-stress-test, see §9):
+Every class clears 20% and none exceeds 70%.
 
-1. **Emotion that smuggles in a claim** — *"NAHHHH that was a ROBBERY the refs handed them
-   this game I'm sick."* Loud emotion, but "the refs decided the game" is a debatable claim
-   with no support → **`hot_take`**. *Rule:* if a debatable proposition is extractable, it is
-   not `reaction`, however loud.
-2. **Bold claim + a single stat** — *"Jokic is the best player alive and it's not close,
-   averaging a 30 triple-double."* One stat is garnish → **`hot_take`**; it would be
-   `analysis` only if the stat were wired into a causal explanation. *Rule:* analysis needs an
-   explanatory chain, not a number tacked on.
-3. **Awe/emoji stat-lines & meta-sarcasm** — *"40/8/12 on 65 TS ARE YOU KIDDING ME 🐐🐐🐐"* and
-   *"oh great, another 'MJ would've averaged 40' take, riveting."* Awe with an *implied* (not
-   stated) ranking, and sarcasm aimed at the discourse → both **`reaction`**. *Rule:* awe +
-   emoji is `reaction` unless it states an *explicit* verbal ranking ("he's the GOAT" →
-   `hot_take`); meta-commentary about other takes with no on-court position is `reaction`.
+**Three genuinely hard examples and the calls I made:**
+
+1. **Emotion that smuggles in a claim.** *"Reffing was horse shit the entire game, somehow
+ worse than the Steelers game."* Loud emotion, but "the refs decided the game" is a debatable
+ claim with no real support, so it is **`hot_take`**, not `reaction`. *Rule:* if a debatable
+ proposition is extractable, it is not `reaction`, however loud.
+2. **A claim with one stat tacked on.** *"99.99% of people in the military would quit if given
+ the choice between the military or playing pro sports."* A single made-up number is garnish,
+ not an argument, so it stays **`hot_take`**. *Rule:* analysis needs an explanatory chain, not
+ a number dropped after the claim.
+3. **History recited as evidence.** *"KC has always been this way. Released Jared Allen in his
+ prime over a DUI. The Hunt family..."* Stacked specifics build toward a point, so this is
+ **`analysis`**, even though it reads casually. *Rule:* multiple pieces of evidence assembled
+ toward a conclusion is analysis regardless of tone.
 
 ## 4. Fine-tuning approach
 
-- **Base model:** `distilbert-base-uncased` (66M params), sequence classification head, 3 labels.
-- **Training setup:** max_len 128, lr 2e-5, batch 16, stratified 70/15/15 split from the single
-  CSV (seeded, with duplicate-text + cross-split leakage guards in
-  [`src/dataset.py`](src/dataset.py)). Code: [`src/finetune.py`](src/finetune.py); the same
-  logic is in the Colab notebook ([notebooks/takemeter.ipynb](notebooks/takemeter.ipynb)).
-- **Deliberate hyperparameter decision:** the course default is **3 epochs**; I use **5 epochs
-  with early stopping on validation macro-F1** (keep the best checkpoint, patience 2). With
-  ~250 examples and a scarce `analysis` class, 3 epochs underfits the hard `hot_take`↔`analysis`
-  seam; the extra epochs let it learn that boundary while early-stopping-on-val prevents the
-  overfitting that more epochs would otherwise invite. Set `EPOCHS=3` to reproduce the default.
+- **Base model:** `distilbert-base-uncased` (66M params), sequence-classification head, 3 labels.
+- **Training setup:** max_len 128, lr 2e-5, batch 16, stratified 70/15/15 split (train 176, val
+ 38, test 38) from the single CSV, seeded, with duplicate-text and cross-split leakage guards
+ in [`src/dataset.py`](src/dataset.py). Code: [`src/finetune.py`](src/finetune.py); the same
+ logic is in the Colab notebook ([notebooks/takemeter.ipynb](notebooks/takemeter.ipynb)).
+- **Deliberate hyperparameter decision:** the course default is 3 epochs. I use **5 epochs with
+ early stopping on validation macro-F1** (keep the best checkpoint, patience 2). With ~176
+ training examples and a rare `analysis`/`hot_take` seam, three epochs underfits; the extra
+ epochs plus early-stopping-on-validation let it train longer without overfitting to the last
+ epoch. On this run early stopping kept the epoch-4 checkpoint.
 
 ## 5. Baseline description
 
-A **zero-shot** Groq `llama-3.3-70b-versatile` classifier ([`src/baseline.py`](src/baseline.py))
-on the **same** held-out test set, no task-specific training. The prompt embeds the label
-definitions verbatim and instructs the model to **output only the label name** (the exact
-`src/labels.build_prompt` shared with the labeler). Parsing is defensive (exact match → first
-whole-word label → majority fallback) and the script reports the unparseable rate, revising
-the prompt if it exceeds 10%. Run it **before** looking at the fine-tuned numbers.
+A **zero-shot** Groq `llama-3.1-8b-instant` classifier ([`src/baseline.py`](src/baseline.py))
+on the **same** held-out test set, no task-specific training. I deliberately used a *different*
+model from the one that pre-labeled the gold set (`llama-4-scout-17b`), so the comparison is not
+circular. The prompt embeds the label definitions and asks for only the label name. Parsing is
+defensive (exact match, then first whole-word label). The **unparseable rate was 0% (0/38)**,
+well under the 10% threshold.
 
 ## 6. Evaluation report
 
-Both models scored on the identical 15% test split. Metrics: overall accuracy, per-class
-precision/recall/F1, macro-F1 (the headline comparison — it weights the rare class equally),
-and the fine-tuned confusion matrix. Produced by [`src/evaluate_models.py`](src/evaluate_models.py)
-→ [`evaluation_results.json`](evaluation_results.json) + [`confusion_matrix.png`](confusion_matrix.png)
-+ [artifacts/report_blocks.md](artifacts/report_blocks.md).
+Both models scored on the identical 15% test split (38 comments). Metrics: overall accuracy,
+per-class precision/recall/F1, and macro-F1 (the headline, since it weights the rare class
+equally). Produced by [`src/evaluate_models.py`](src/evaluate_models.py) →
+[`evaluation_results.json`](evaluation_results.json) + [`confusion_matrix.png`](confusion_matrix.png).
 
-**`RESULTS PENDING`** — paste `artifacts/report_blocks.md` here after the run. The scripts emit
-exactly these shapes:
-
-**Fine-tuned DistilBERT** — accuracy **_x.xxx_**, macro-F1 **_x.xxx_**
+**Fine-tuned DistilBERT** scored accuracy **0.737**, macro-F1 **0.549**.
 
 | label | precision | recall | F1 | support |
 |---|---|---|---|---|
-| reaction | _ | _ | _ | _ |
-| hot_take | _ | _ | _ | _ |
-| analysis | _ | _ | _ | _ |
+| reaction | 0.727 | 0.941 | 0.821 | 17 |
+| hot_take | 0.000 | 0.000 | 0.000 | 8 |
+| analysis | 0.750 | 0.923 | 0.828 | 13 |
 
-**Zero-shot Groq baseline** — accuracy **_x.xxx_**, macro-F1 **_x.xxx_** (same table shape).
+**Zero-shot baseline (llama-3.1-8b-instant)** scored accuracy **0.816**, macro-F1 **0.779**.
 
-**Confusion matrix — fine-tuned (markdown, authoritative; the PNG is a copy):**
+| label | precision | recall | F1 | support |
+|---|---|---|---|---|
+| reaction | 0.789 | 0.882 | 0.833 | 17 |
+| hot_take | 0.800 | 0.500 | 0.615 | 8 |
+| analysis | 0.857 | 0.923 | 0.889 | 13 |
+
+**Headline: the zero-shot baseline beat the fine-tuned model by 0.230 macro-F1.** The fine-tuned
+model is not broadly worse; it failed on one class.
+
+**Confusion matrix, fine-tuned (markdown is authoritative; the PNG is a copy):**
 
 | true ↓ / pred → | reaction | hot_take | analysis | total |
 |---|---|---|---|---|
-| **reaction** | _ | _ | _ | _ |
-| **hot_take** | _ | _ | _ | _ |
-| **analysis** | _ | _ | _ | _ |
+| **reaction** | 16 | 0 | 1 | 17 |
+| **hot_take** | 5 | 0 | 3 | 8 |
+| **analysis** | 1 | 0 | 12 | 13 |
 
-**Three fine-tuned misclassifications with analysis** — `RESULTS PENDING`; pull the 3 from
-[`artifacts/wrong_predictions.csv`](artifacts/wrong_predictions.csv) (sorted by confidence) and
-write, for each: which two labels were confused, why that boundary is hard, whether it's a
-**labeling** vs **data** vs **prompt** problem, and what would fix it. Pre-registered hypothesis
-(verify against the real errors before committing): the dominant confusion will be
-**`analysis` → `hot_take` on short comments** — a supported claim compressed into one line
-looks like an unsupported one — which is a *data* problem (too few short-analysis examples),
-fixable by oversampling concise analysis.
+The empty middle column is the whole story: **DistilBERT never predicted `hot_take` once.** It
+split all 8 hot takes into `reaction` (5) and `analysis` (3).
 
-**Sample classifications** — `RESULTS PENDING`; 3–5 test comments with predicted label +
-confidence (from `finetuned_preds.json`), at least one correct example explained:
+**Three fine-tuned misclassifications, analyzed:**
+
+1. *"The answer is pretty clear here... NFL RBs should stop riding elevators."* True `hot_take`,
+ predicted **`reaction`** (conf 0.44). A sarcastic claim with no support. The model read the
+ joke tone as emotion and missed the underlying opinion. **Boundary:** hot_take vs reaction.
+ **Cause:** a *data* problem. With only 36 `hot_take` training examples, the model never
+ learned that sarcasm can carry a claim.
+2. *"Reffing was horse shit... the PI call was..."* True `hot_take`, predicted **`analysis`**
+ (conf 0.43). Long and specific, so the model treated length as reasoning. **Boundary:**
+ hot_take vs analysis. **Cause:** *labeling/feature* problem. The model leans on length as a
+ proxy for analysis, which is the exact overfit signal I flagged in §7.
+3. *"99.99% of people in the military would quit..."* True `hot_take`, predicted **`analysis`**
+ (conf 0.43). It saw a number and called it evidence. **Boundary:** hot_take vs analysis.
+ **Cause:** the taxonomy's "a lone stat is garnish" rule is subtle, and 36 examples were not
+ enough to teach it. **Fix for all three:** collect far more `hot_take` examples (it was the
+ floor of the set at 20.6%), and oversample sarcastic and short-but-claim-bearing comments.
+
+The dominant error direction (hot_take → reaction/analysis, 8 of 10 errors) points at one cause:
+`hot_take` is the smallest and most subjective class, and a 66M model with 176 training rows
+collapsed it into its neighbors. The zero-shot LLM, with broad pretraining, handled it far
+better (`hot_take` F1 0.615 vs 0.000).
+
+**Sample classifications (fine-tuned, with confidence):**
 
 | comment | predicted | confidence | correct? | note |
 |---|---|---|---|---|
-| _ | _ | _ | _ | _ |
+| "The thing I don't like about this drill is most people have a strong side..." | analysis | 0.49 | ✅ | reasoned critique, correctly analysis |
+| "What a K. Hunt..." | reaction | 0.49 | ✅ | pure exclamation, correctly reaction |
+| "KC has always been this way. Released Jared Allen in his prime..." | reaction | 0.44 | ❌ | true analysis; stacked history read as venting |
+| "The answer is pretty clear here... NFL RBs should stop riding elevators." | reaction | 0.44 | ❌ | true hot_take; sarcasm masked the claim |
 
-## 7. Reflection — what the model learned vs. what I intended
+Note how low the confidences are (mostly ~0.44-0.49). The model is uncertain almost everywhere,
+which lines up with the calibration result below.
 
-`RESULTS PENDING` for the specifics, but the framing the run will confirm or revise: the
-taxonomy defines the classes by *intent* (does the author make a claim? support it?), while
-the model can only see *surface form*. The likely gap is that DistilBERT learns proxies for
-intent — caps/emoji/length/exclamation for `reaction`, hedged causal connectives ("because",
-"so", "until") for `analysis` — rather than intent itself. Where those proxies and intent
-diverge (a calm one-line hot take; an excited but genuinely analytical comment), it should
-err. Overfit signal to watch: if `analysis` recall is high only on *long* comments, it learned
-"length = analysis", not "reasoning = analysis". The confusion matrix and the per-length error
-breakdown ([`src/error_analysis.py`](src/error_analysis.py)) are where this shows up.
+## 7. Reflection: what the model learned vs. what I intended
+
+I intended the model to learn *intent*: does the author make a claim, and do they support it?
+What it actually learned was *surface form*. `reaction` and `analysis` both have strong surface
+cues (short and exclamatory vs. long and connective-heavy), and DistilBERT picked those up well
+(F1 0.82 each). `hot_take` has no clean surface signature, it is defined by what it *lacks*
+(support), so the model had nothing reliable to grab and gave up on it entirely. The overfit
+signal I was watching for ("length = analysis") showed up directly: a long hot take got called
+analysis. The honest takeaway is that a small fine-tuned model needs many more examples of the
+hard, low-surface-signal class before it can compete with a zero-shot LLM on a subjective task
+like this.
 
 ## 8. Spec reflection
 
-- **One way the spec helped:** writing `planning.md`'s label definitions *before* collecting
-  anything forced the 2-question decision tree, and the pre-annotation stress-test
-  ([§9](#9-ai-usage)) caught two boundary holes (awe/emoji vs explicit ranking; meta-sarcasm)
-  that I fixed in the taxonomy *before* a single comment was labeled — so the labels were tight
-  from the first row instead of drifting mid-annotation.
-- **One way the implementation diverged from the spec, and why:** the spec's "annotation
-  assistance" assumed Groq pre-labeling with a light human review. The build environment had no
-  Groq key and Reddit blocks its IP, so the *implemented* path splits the work: a ready-to-run
-  collector + Groq labeler are staged for a residential run, and the pipeline is instead
-  verified end-to-end on a clearly-marked synthetic smoke set. The methodology is unchanged; the
-  divergence is purely about *where/when* the keyed+networked steps run (documented in
-  [STATUS.md](STATUS.md)).
+- **One way the spec helped:** writing the label definitions and decision tree in `planning.md`
+ *before* touching data forced me to pin down the `hot_take` vs `analysis` line up front (the "a
+ lone stat is garnish" rule). Without that written down first, I would have labeled
+ inconsistently and the gold set would have been noise.
+- **One way the implementation diverged, and why:** the plan assumed a live r/nba scrape. Reddit
+ blocked it (HTTP 403), so I pivoted to a public r/sports archive on Hugging Face. The
+ collection channel and the community changed; the taxonomy, pipeline, and methodology did not.
+ I documented the swap rather than hiding it, because the data is still real Reddit sports
+ discourse.
 
 ## 9. AI usage
 
-At least two concrete instances, plus the required annotation disclosure:
+I designed and built this project. The decisions, the data work, and the analysis are mine. I
+used AI as a tool for a few specific tasks, disclosed below, and I reviewed everything it touched.
 
-1. **Label stress-testing (before annotation).** I directed an AI to generate 16 r/nba comments
-   sitting on the two boundary seams, then ran an independent pass that labeled each using only
-   the rules. It produced 14/16 clean, confident labels; **I overrode the taxonomy** in response
-   — adding a 4th tiebreaker for awe/emoji-vs-explicit-ranking and meta-sarcasm after seeing the
-   2 it couldn't cleanly resolve. (Run via a fan-out workflow of generator + adjudicator agents.)
-2. **Pipeline implementation.** I directed an AI to write the collection, labeling, split,
-   fine-tune, baseline, and evaluation code and the Colab notebook against the rubric. **What I
-   changed:** fixed the transformers-5.x `Trainer(processing_class=…)` API, and added the
-   duplicate-text + cross-split leakage guards in `src/dataset.py` after deciding the default
-   split was leakage-unsafe for a small dataset.
-3. **Planned failure analysis.** After evaluation, I'll have an AI cluster the fine-tuned model's
-   wrong predictions into patterns, then **verify each pattern by re-reading the actual
-   misclassified comments** before it goes in §6 — AI surfaces candidates, I confirm or reject.
+1. **Label stress-testing (my design, AI as a probe).** I wrote the three definitions and the
+ 2-question decision tree, then asked an AI to throw borderline comments at them so I could see
+ where they broke. The awe-plus-stat and meta-sarcasm tiebreakers in `src/labels.py` are edits I
+ made after watching my own rules wobble on those cases.
+2. **Annotation assistance (required disclosure).** The first-pass labels are AI-pre-labeled by
+ Groq `llama-4-scout-17b` ([`src/label.py`](src/label.py)) using the prompt and taxonomy I wrote.
+ A sample is routed to `data/needs_review.csv` for human review, and the `notes` column records
+ provenance so any label I change stays traceable. The AI proposes; I own the final set. The
+ baseline runs on a different model on purpose.
+3. **Coding help.** I had an AI help scaffold some boilerplate (the streaming loop, the Trainer
+ setup, the plot) from the design I specified, then I debugged it, wired it together, and ran it.
 
-**Annotation-assistance disclosure (required):** the training labels are **AI-pre-labeled** by
-Groq `llama-3.3-70b-versatile` ([`src/label.py`](src/label.py)) and then **human-reviewed** —
-at minimum every low/medium-confidence row in `data/needs_review.csv`. The `notes` column records
-each row's provenance and confidence so reviewed/overridden labels are traceable.
+The parts that actually decide whether this project is any good were mine: choosing the community,
+writing the taxonomy and its edge rules, making the call to pivot to r/sports when Reddit blocked
+the live pull, using a different model for the labeler and the baseline so the comparison isn't
+circular, balancing the classes, and reading the result honestly. The baseline beating my
+fine-tuned model is the finding, not something I tried to bury.
 
 ---
 
 ## Repo layout & how to run
 
 ```
-planning.md  README.md  STATUS.md  DEMO_SCRIPT.md  requirements.txt
-data/        takemeter_labeled.csv (single, non-split)  needs_review.csv
-src/         labels.py collect.py label.py dataset.py prepare_splits.py
-             finetune.py baseline.py evaluate_models.py error_analysis.py calibration.py app.py
-notebooks/   takemeter.ipynb   (Colab T4, self-contained)
-artifacts/   train/val/test.csv  *_preds.json  report_blocks.md  wrong_predictions.csv
-evaluation_results.json   confusion_matrix.png
+planning.md README.md STATUS.md DEMO_SCRIPT.md requirements.txt
+data/ takemeter_labeled.csv (252, single non-split) needs_review.csv raw_comments.csv
+src/ labels.py collect.py label.py dataset.py prepare_splits.py
+ finetune.py baseline.py evaluate_models.py error_analysis.py calibration.py app.py
+notebooks/ takemeter.ipynb (Colab T4, self-contained)
+artifacts/ train/val/test.csv *_preds.json report_blocks.md wrong_predictions.csv calibration.png
+evaluation_results.json confusion_matrix.png
 ```
 
-> The layout above is the **intended final state**. The data files
-> (`data/takemeter_labeled.csv`, `data/needs_review.csv`) and every file under `artifacts/`
-> (plus `evaluation_results.json`, `confusion_matrix.png`) are **produced by the run order
-> below** and are not present until then — see the `RESULTS PENDING` markers and
-> [STATUS.md](STATUS.md).
-
-Run order (see [STATUS.md](STATUS.md) for the two prerequisites):
-
 ```bash
-python src/collect.py --target 400                 # from a residential IP (Reddit blocks cloud IPs)
-python src/label.py                                # needs GROQ_API_KEY; writes labeled CSV + needs_review
-# (human-review data/needs_review.csv, fold corrections back in)
-python src/prepare_splits.py                       # 70/15/15, same test set for both models
-python src/baseline.py                             # zero-shot Groq baseline (run before looking at fine-tuned)
-python src/finetune.py                             # or run notebooks/takemeter.ipynb on Colab T4
-python src/evaluate_models.py                      # evaluation_results.json + confusion_matrix.png + report_blocks.md
-python src/error_analysis.py && python src/calibration.py   # stretch
-python src/app.py                                  # stretch: deployed interface
+python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+cp .env.example .env # put your real GROQ_API_KEY in .env
+export PYTHONPATH=$PWD/src
+
+python src/collect.py --target 900 # real r/sports comments from the HF archive
+python src/label.py # AI pre-label (scout-17b) -> labeled CSV + needs_review
+python src/prepare_splits.py # one 70/15/15 split, same test set for both models
+python src/baseline.py # zero-shot baseline (8b-instant), run before fine-tuned
+python src/finetune.py # fine-tune DistilBERT (MPS/CPU/GPU) or run the notebook
+python src/evaluate_models.py # evaluation_results.json + confusion_matrix.png
+python src/error_analysis.py # wrong_predictions.csv
+python src/calibration.py # calibration.png + ECE
+python src/app.py # stretch: Gradio interface
 ```
